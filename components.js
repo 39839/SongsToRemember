@@ -1,12 +1,8 @@
 const { useState } = React;
 
-const resolvePath = (target) => {
-  const { href } = window.location;
-  if (href.endsWith('/')) {
-    return `${href}${target}`;
-  }
-  return href.replace(/[^/]*$/, target);
-};
+const SITE_ROOT = (typeof window !== 'undefined' && window.__SITE_ROOT__) || './';
+
+const resolvePath = (target) => `${SITE_ROOT}${target}`;
 
 const Navigation = ({ onNavigate }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -26,11 +22,11 @@ const Navigation = ({ onNavigate }) => {
     }
 
     if (section === 'songs') {
-      window.location.href = resolvePath('home.html#songs');
+      window.location.href = resolvePath('home/#songs');
     } else if (section === 'about') {
-      window.location.href = resolvePath('about.html');
+      window.location.href = resolvePath('about/');
     } else {
-      window.location.href = resolvePath('home.html');
+      window.location.href = resolvePath('home/');
     }
 
     setMenuOpen(false);

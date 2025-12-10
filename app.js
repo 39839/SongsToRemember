@@ -1,5 +1,6 @@
 const { useState, useMemo, useRef } = React;
 const { Navigation, Footer } = window.SharedComponents || {};
+const SITE_ROOT = (typeof window !== 'undefined' && window.__SITE_ROOT__) || './';
 
 if (!Navigation || !Footer) {
   throw new Error('Shared components failed to load.');
@@ -78,7 +79,7 @@ const SongCard = ({ song }) => {
   const songSlug = slugify(song.title);
 
   return (
-    <a href={`song-${songSlug}.html`} className="block group">
+    <a href={`${SITE_ROOT}songs/${songSlug}/`} className="block group">
       <article className="song-card bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transform group-hover:-translate-y-3 transition-all duration-500 border-2 border-sageGreen/20 group-hover:border-deepRed/40">
         <div className="relative overflow-hidden h-56">
           <img

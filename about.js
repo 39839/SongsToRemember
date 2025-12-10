@@ -1,4 +1,5 @@
 const { Navigation, Footer } = window.SharedComponents || {};
+const SITE_ROOT = (typeof window !== 'undefined' && window.__SITE_ROOT__) || './';
 
 if (!Navigation || !Footer) {
   throw new Error('Shared components missing on about page.');
@@ -59,7 +60,7 @@ const AboutPage = () => (
             {missionStatement}
           </p>
           <a
-            href="home.html#songs"
+            href={`${SITE_ROOT}home/#songs`}
             className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-deepRed via-[#a82724] to-[#7a1715] text-white rounded-full font-semibold shadow-lg hover:shadow-deepRed/40 transition-transform hover:-translate-y-1"
           >
             Explore the songs
