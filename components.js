@@ -1,8 +1,10 @@
 const Navigation = ({ onNavigate }) => {
   const handleNavigation = (section) => {
     if (typeof onNavigate === 'function') {
-      onNavigate(section);
-      return;
+      if (section === 'home' || section === 'songs') {
+        onNavigate(section);
+        return;
+      }
     }
 
     if (section === 'songs') {
@@ -19,11 +21,18 @@ const Navigation = ({ onNavigate }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-24">
           <div className="flex items-center">
-            <img
-              src="HorizontalLogo.png"
-              alt="The Zikaron Project"
-              className="h-[72px] w-auto transform hover:scale-105 transition-transform duration-300 drop-shadow-lg"
-            />
+            <button
+              type="button"
+              onClick={() => handleNavigation('home')}
+              className="focus:outline-none"
+              aria-label="Go to home"
+            >
+              <img
+                src="HorizontalLogo.png"
+                alt="The Zikaron Project"
+                className="h-[72px] w-auto transform hover:scale-105 transition-transform duration-300 drop-shadow-lg"
+              />
+            </button>
           </div>
           <div className="flex gap-8 items-center">
             <button
