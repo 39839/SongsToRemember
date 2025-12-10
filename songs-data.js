@@ -1,4 +1,4 @@
-// Songs data for SongsToRemember project
+// Songs data for The Zikaron Project
 const songs = [
   {
     id: 1,
