@@ -25,6 +25,8 @@ const Navigation = ({ onNavigate }) => {
       window.location.href = resolvePath('home/#songs');
     } else if (section === 'about') {
       window.location.href = resolvePath('about/');
+    } else if (section === 'requests') {
+      window.location.href = resolvePath('requests/');
     } else {
       window.location.href = resolvePath('home/');
     }
@@ -36,6 +38,7 @@ const Navigation = ({ onNavigate }) => {
     { label: 'Home', section: 'home' },
     { label: 'Songs', section: 'songs' },
     { label: 'About', section: 'about' },
+    { label: 'Requests', section: 'requests' },
   ];
 
   const linkClass =
