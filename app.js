@@ -7,7 +7,7 @@ if (!Navigation || !Footer) {
 }
 
 const missionStatement =
-  "These videos are part of my project to translate Hebrew remembrance day songs into English, in an effort to offer Jewish communities abroad a way to connect with Israelis in remembrance of those we have lost. Join me in memory of the fallen soldiers of the IDF, in memory of the victims of the Holocaust, and in memory of all the victims of Jewish hate worldwide. These videos also serve to share our pain and experiences with the global community, as well as to be used as an educational tool by both Hebrew and English educators.";
+  "The Zikaron Project is an effort to translate Hebrew remembrance day songs into English, as a means for both Jews and non-Jews abroad to connect with Israeli pain, memory, and grief. By conveying Israelis' story—as told in their own words—to the international community, this project seeks to offer the global community a truer understanding of the Israeli experience, as well as to provide an educational tool for language educators. Most importantly, The Zikaron Project aims to commemorate and eternalize the memory of our fallen, and share their stories with the world.";
 
 const slugify = (text) =>
   text
@@ -35,22 +35,29 @@ const Hero = ({ onScrollToSongs }) => (
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sageGreen/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
     </div>
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
-      <div className="flex flex-col items-center text-center gap-8">
-        <div className="space-y-5 max-w-5xl">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight bg-gradient-to-r from-earthBrown via-deepRed to-earthBrown bg-clip-text text-transparent">
-            Bridging Hebrew Remembrance Songs
-            <br />
-            <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl">with the World</span>
+      <div className="flex flex-col items-center text-center gap-10">
+        {/* Definition Card */}
+        <div className="bg-[#F2F0E4] rounded-3xl px-12 py-10 shadow-2xl border-2 border-[#e0ddc8] max-w-3xl">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-4" style={{fontFamily: 'Georgia, serif', color: '#8B4513'}}>
+            Zi·ka·ron <span className="text-[#8B4513]/40">|</span> <span dir="rtl" style={{fontFamily: 'serif'}}>זִכָּרוֹן</span>
           </h1>
+          <p className="text-xl font-bold mb-3" style={{color: '#2F4F4F'}}>
+            noun
+          </p>
+          <p className="text-lg italic" style={{fontFamily: 'Georgia, serif', color: '#2F4F4F'}}>
+            The Hebrew word for "memory" or "remembrance."
+          </p>
         </div>
 
+        {/* Decorative Flower Divider */}
         <div className="flex items-center justify-center gap-4">
           <div className="h-px w-20 bg-gradient-to-r from-transparent via-deepRed to-transparent"></div>
-          <img src="Flower.png" alt="" className="h-8 w-auto animate-pulse" />
+          <img src={`${SITE_ROOT}Flower.png`} alt="" className="h-10 w-auto animate-pulse" />
           <div className="h-px w-20 bg-gradient-to-l from-transparent via-deepRed to-transparent"></div>
         </div>
 
-        <p className="max-w-5xl text-lg sm:text-xl md:text-2xl leading-relaxed text-earthBrown/90 font-light px-4">
+        {/* Main Body Text */}
+        <p className="max-w-4xl text-lg sm:text-xl leading-relaxed text-earthBrown/95 px-4 text-left" style={{fontFamily: 'Georgia, serif'}}>
           {missionStatement}
         </p>
 

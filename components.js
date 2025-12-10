@@ -52,7 +52,7 @@ const Navigation = ({ onNavigate }) => {
             aria-label="Go to home"
           >
             <img
-              src="HorizontalLogo.png"
+              src={resolvePath('HorizontalLogo.png')}
               alt="The Zikaron Project"
               className="h-[68px] w-auto transform hover:scale-105 transition-transform duration-300 drop-shadow-lg"
             />
@@ -115,7 +115,7 @@ const Footer = () => (
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-20">
       <div className="flex flex-col items-center mb-16">
         <img
-          src="HorizontalLogo.png"
+          src={resolvePath('HorizontalLogo.png')}
           alt="The Zikaron Project"
           className="h-28 w-auto mb-8 filter brightness-0 invert opacity-95 drop-shadow-lg"
         />
