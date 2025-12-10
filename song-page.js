@@ -23,7 +23,8 @@ const getYouTubeId = (url) => {
 };
 
 const extractSlugFromPath = () => {
-  const match = window.location.pathname.match(/song-([a-z0-9-]+)\.html$/i);
+  // Extract slug from /songs/[slug]/ or /songs/[slug]/index.html
+  const match = window.location.pathname.match(/\/songs\/([a-z0-9-]+)\/?(?:index\.html)?$/i);
   return match ? match[1].toLowerCase() : null;
 };
 
