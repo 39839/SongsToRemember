@@ -6,8 +6,11 @@ if (!Navigation || !Footer) {
   throw new Error('Shared components failed to load.');
 }
 
-const missionStatement =
-  "The Zikaron Project is an effort to translate Hebrew remembrance day songs into English, as a means for both Jews and non-Jews abroad to connect with Israeli pain, memory, and grief. By conveying Israelis' story—as told in their own words—to the international community, this project seeks to offer the global community a truer understanding of the Israeli experience, as well as to provide an educational tool for language educators. Most importantly, The Zikaron Project aims to commemorate and eternalize the memory of our fallen, and share their stories with the world.";
+const MissionStatement = () => (
+  <span>
+    <strong>The Zikaron Project</strong> is an effort to translate Hebrew remembrance day songs into English, as a means for both Jews and non-Jews abroad to connect with Israeli pain, memory, and grief. By conveying Israelis' story—as told in their own words—to the international community, this project seeks to offer the global community a truer understanding of the Israeli experience, as well as to provide an educational tool for language educators. Most importantly, The Zikaron Project aims to commemorate and eternalize the memory of our fallen, and share their stories with the world.
+  </span>
+);
 
 const slugify = (text) =>
   text
@@ -38,13 +41,13 @@ const Hero = ({ onScrollToSongs }) => (
       <div className="flex flex-col items-center text-center gap-10">
         {/* Definition Card */}
         <div className="bg-[#F2F0E4] rounded-3xl px-12 py-10 shadow-2xl border-2 border-[#e0ddc8] max-w-3xl">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-4" style={{fontFamily: 'Georgia, serif', color: '#8B4513'}}>
-            Zi·ka·ron <span className="text-[#8B4513]/40">|</span> <span dir="rtl" style={{fontFamily: 'serif'}}>זִכָּרוֹן</span>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-4" style={{fontFamily: 'Cardo, Georgia, serif', color: '#8B4513'}}>
+            Zi·ka·ron <span className="text-[#8B4513]/40">|</span> <span dir="rtl" style={{fontFamily: 'Cardo, serif'}}>זִכָּרוֹן</span>
           </h1>
-          <p className="text-xl font-bold mb-3" style={{color: '#2F4F4F'}}>
+          <p className="text-xl font-bold mb-3" style={{color: '#2F4F4F', fontFamily: 'Cardo, Georgia, serif'}}>
             noun
           </p>
-          <p className="text-lg italic" style={{fontFamily: 'Georgia, serif', color: '#2F4F4F'}}>
+          <p className="text-lg italic" style={{fontFamily: 'Cardo, Georgia, serif', color: '#2F4F4F'}}>
             The Hebrew word for "memory" or "remembrance."
           </p>
         </div>
@@ -58,7 +61,7 @@ const Hero = ({ onScrollToSongs }) => (
 
         {/* Main Body Text */}
         <p className="max-w-4xl text-lg sm:text-xl leading-relaxed text-earthBrown/95 px-4 text-left" style={{fontFamily: 'Georgia, serif'}}>
-          {missionStatement}
+          <MissionStatement />
         </p>
 
         <button
