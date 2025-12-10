@@ -1,56 +1,110 @@
+const { useState } = React;
+
+const resolvePath = (target) => {
+  const { href } = window.location;
+  if (href.endsWith('/')) {
+    return `${href}${target}`;
+  }
+  return href.replace(/[^/]*$/, target);
+};
+
 const Navigation = ({ onNavigate }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const handleNavigation = (section) => {
     if (typeof onNavigate === 'function') {
-      if (section === 'home' || section === 'songs') {
-        onNavigate(section);
+      if (section === 'home') {
+        onNavigate('home');
+        setMenuOpen(false);
+        return;
+      }
+      if (section === 'songs') {
+        onNavigate('songs');
+        setMenuOpen(false);
         return;
       }
     }
 
     if (section === 'songs') {
-      window.location.href = 'index.html#songs';
+      window.location.href = resolvePath('home.html#songs');
     } else if (section === 'about') {
-      window.location.href = 'about.html';
+      window.location.href = resolvePath('about.html');
     } else {
-      window.location.href = 'index.html';
+      window.location.href = resolvePath('home.html');
     }
+
+    setMenuOpen(false);
   };
+
+  const navItems = [
+    { label: 'Home', section: 'home' },
+    { label: 'Songs', section: 'songs' },
+    { label: 'About', section: 'about' },
+  ];
+
+  const linkClass =
+    "relative px-4 py-2 text-sm tracking-[0.3em] uppercase font-semibold text-earthBrown hover:text-deepRed transition-colors duration-300";
 
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50 border-b-2 border-sageGreen/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-24">
-          <div className="flex items-center">
-            <button
-              type="button"
-              onClick={() => handleNavigation('home')}
-              className="focus:outline-none"
-              aria-label="Go to home"
-            >
-              <img
-                src="HorizontalLogo.png"
-                alt="The Zikaron Project"
-                className="h-[72px] w-auto transform hover:scale-105 transition-transform duration-300 drop-shadow-lg"
-              />
-            </button>
+          <button
+            type="button"
+            onClick={() => handleNavigation('home')}
+            className="focus:outline-none"
+            aria-label="Go to home"
+          >
+            <img
+              src="HorizontalLogo.png"
+              alt="The Zikaron Project"
+              className="h-[68px] w-auto transform hover:scale-105 transition-transform duration-300 drop-shadow-lg"
+            />
+          </button>
+
+          <div className="hidden md:flex gap-6 items-center">
+            {navItems.map((item) => (
+              <button
+                key={item.section}
+                onClick={() => handleNavigation(item.section)}
+                className={`${linkClass} group`}
+              >
+                {item.label}
+                <span className="absolute left-1/2 -bottom-1 w-0 h-0.5 bg-deepRed transition-all duration-300 -translate-x-1/2 group-hover:w-full"></span>
+              </button>
+            ))}
           </div>
-          <div className="flex gap-8 items-center">
-            <button
-              onClick={() => handleNavigation('songs')}
-              className="text-earthBrown hover:text-deepRed transition-colors duration-300 font-semibold text-lg relative group"
-            >
-              Songs
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-deepRed transition-all duration-300 group-hover:w-full"></span>
-            </button>
-            <button
-              onClick={() => handleNavigation('about')}
-              className="text-earthBrown hover:text-deepRed transition-colors duration-300 font-semibold text-lg relative group"
-            >
-              About
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-deepRed transition-all duration-300 group-hover:w-full"></span>
-            </button>
-          </div>
+
+          <button
+            type="button"
+            className="md:hidden inline-flex items-center justify-center p-3 rounded-full border border-sageGreen/50 text-earthBrown hover:text-deepRed hover:border-deepRed transition-colors"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-label="Toggle navigation menu"
+          >
+            {menuOpen ? (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
         </div>
+        {menuOpen && (
+          <div className="md:hidden border-t border-sageGreen/30 pt-4 pb-6 space-y-3">
+            {navItems.map((item) => (
+              <button
+                key={item.section}
+                onClick={() => handleNavigation(item.section)}
+                className="w-full text-left px-5 py-3 rounded-2xl bg-lightBeige/80 text-earthBrown font-semibold tracking-[0.3em] uppercase text-sm"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </nav>
   );

@@ -41,8 +41,8 @@ const AboutPage = () => (
       </div>
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 text-center space-y-8">
         <p className="text-sm uppercase tracking-[0.35em] text-oliveGreen font-bold">About The Project</p>
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight bg-gradient-to-r from-earthBrown via-deepRed to-earthBrown bg-clip-text text-transparent">
-          The Melody of Memory
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight bg-gradient-to-r from-earthBrown via-deepRed to-earthBrown bg-clip-text text-transparent pb-2">
+          The Zikaron Project
         </h1>
         <p className="text-xl text-earthBrown/90 leading-relaxed max-w-3xl mx-auto">
           The Zikaron Project shares the heart of Israel's remembrance tradition with the world through carefully translated lyrics, cinematic storytelling, and reverent design.
@@ -59,7 +59,7 @@ const AboutPage = () => (
             {missionStatement}
           </p>
           <a
-            href="index.html#songs"
+            href="home.html#songs"
             className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-deepRed via-[#a82724] to-[#7a1715] text-white rounded-full font-semibold shadow-lg hover:shadow-deepRed/40 transition-transform hover:-translate-y-1"
           >
             Explore the songs
@@ -85,13 +85,15 @@ const AboutPage = () => (
       <section className="bg-white border-2 border-oliveGreen/30 rounded-3xl shadow-2xl p-10 space-y-5">
         <p className="text-sm uppercase tracking-[0.35em] text-oliveGreen font-bold">About Our Logo</p>
         <h2 className="text-3xl font-bold text-earthBrown">Dam HaMaccabim & the Promise of Zikaron</h2>
-        <div className="grid lg:grid-cols-2 gap-10 items-center">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/DamHamacabim_ST_06.jpg/500px-DamHamacabim_ST_06.jpg"
-            alt="Dam HaMaccabim HaAdom flower"
-            className="w-full rounded-3xl shadow-lg border border-sageGreen/40 object-cover"
-          />
-          <div className="space-y-4 text-lg leading-relaxed text-earthBrown/90">
+        <div className="grid lg:grid-cols-2 gap-10 items-stretch">
+          <div className="rounded-3xl shadow-lg border border-sageGreen/40 overflow-hidden">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/DamHamacabim_ST_06.jpg/500px-DamHamacabim_ST_06.jpg"
+              alt="Dam HaMaccabim HaAdom flower"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="space-y-4 text-lg leading-relaxed text-earthBrown/90 h-full flex flex-col justify-center">
             <p>
               The flower woven into our emblem is the Dam HaMaccabim HaAdom (Helichrysum sanguineum), known in English as the Maccabi blood flower. Its vivid red bracts—often likened to drops of blood—have made it the official symbol of Yom HaZikaron, Israel’s Memorial Day. Pins bearing this blossom are worn across the country in ceremonies, echoing the legend that the plant blooms wherever the Maccabees shed their blood.
             </p>

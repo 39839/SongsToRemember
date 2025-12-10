@@ -7,17 +7,39 @@ if (!Navigation || !Footer) {
 
 const songsData = window.songs || [];
 
+const slugify = (text) =>
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+
 const getYouTubeId = (url) => {
   if (!url) return '';
   const match = url.match(/(?:youtu\.be\/|v=|\/embed\/|\/watch\?v=|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/);
   return match ? match[1] : url;
 };
 
+const extractSlugFromPath = () => {
+  const match = window.location.pathname.match(/song-([a-z0-9-]+)\.html$/i);
+  return match ? match[1].toLowerCase() : null;
+};
+
 const SongPage = () => {
   const searchParams = new URLSearchParams(window.location.search);
-  const songId = parseInt(searchParams.get('id'), 10);
+  const slugFromPath = extractSlugFromPath() || (searchParams.get('slug') || '').toLowerCase();
+  const songIdParam = parseInt(searchParams.get('id'), 10);
 
-  const song = useMemo(() => songsData.find((item) => item.id === songId), [songId]);
+  const song = useMemo(() => {
+    if (slugFromPath) {
+      return songsData.find((item) => slugify(item.title) === slugFromPath);
+    }
+    if (!Number.isNaN(songIdParam)) {
+      return songsData.find((item) => item.id === songIdParam);
+    }
+    return null;
+  }, [slugFromPath, songIdParam]);
 
   if (!song) {
     return (
@@ -26,7 +48,7 @@ const SongPage = () => {
         <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
           <p className="text-2xl text-earthBrown mb-6">We couldn’t find that song.</p>
           <a
-            href="index.html#songs"
+            href="home.html#songs"
             className="inline-flex items-center gap-3 px-6 py-3 bg-deepRed text-white rounded-full font-semibold shadow-lg hover:shadow-deepRed/40 transition-transform hover:-translate-y-1"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -54,7 +76,7 @@ const SongPage = () => {
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="flex items-center gap-4 flex-wrap">
             <a
-              href="index.html#songs"
+              href="home.html#songs"
               className="inline-flex items-center gap-3 px-5 py-3 bg-white/80 backdrop-blur border border-sageGreen/40 rounded-full text-earthBrown font-semibold shadow-lg hover:-translate-x-1 transition-transform"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

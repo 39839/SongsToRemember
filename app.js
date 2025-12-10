@@ -8,6 +8,14 @@ if (!Navigation || !Footer) {
 const missionStatement =
   "These videos are part of my project to translate Hebrew remembrance day songs into English, in an effort to offer Jewish communities abroad a way to connect with Israelis in remembrance of those we have lost. Join me in memory of the fallen soldiers of the IDF, in memory of the victims of the Holocaust, and in memory of all the victims of Jewish hate worldwide. These videos also serve to share our pain and experiences with the global community, as well as to be used as an educational tool by both Hebrew and English educators.";
 
+const slugify = (text) =>
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+
 const songsData = window.songs || [];
 
 const getYouTubeId = (url) => {
@@ -19,26 +27,26 @@ const getYouTubeId = (url) => {
 };
 
 const Hero = ({ onScrollToSongs }) => (
-  <header className="relative overflow-hidden bg-gradient-to-br from-[#faf9f5] via-[#f5f3eb] to-[#ebe8dc] text-earthBrown py-28">
+  <header className="relative overflow-hidden bg-gradient-to-br from-[#faf9f5] via-[#f5f3eb] to-[#ebe8dc] text-earthBrown pt-16 pb-24">
     <div className="absolute inset-0 opacity-20">
       <div className="absolute top-10 left-20 w-72 h-72 bg-deepRed/20 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-10 right-20 w-96 h-96 bg-oliveGreen/15 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sageGreen/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
     </div>
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
-      <div className="flex flex-col items-center text-center gap-10">
+      <div className="flex flex-col items-center text-center gap-8">
         <div className="space-y-5 max-w-5xl">
-          <div className="flex items-center justify-center gap-4">
-            <div className="h-px w-20 bg-gradient-to-r from-transparent via-deepRed to-transparent"></div>
-            <img src="Flower.png" alt="" className="h-8 w-auto animate-pulse" />
-            <div className="h-px w-20 bg-gradient-to-l from-transparent via-deepRed to-transparent"></div>
-          </div>
-
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight bg-gradient-to-r from-earthBrown via-deepRed to-earthBrown bg-clip-text text-transparent">
             Bridging Hebrew Remembrance Songs
             <br />
             <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl">with the World</span>
           </h1>
+        </div>
+
+        <div className="flex items-center justify-center gap-4">
+          <div className="h-px w-20 bg-gradient-to-r from-transparent via-deepRed to-transparent"></div>
+          <img src="Flower.png" alt="" className="h-8 w-auto animate-pulse" />
+          <div className="h-px w-20 bg-gradient-to-l from-transparent via-deepRed to-transparent"></div>
         </div>
 
         <p className="max-w-5xl text-lg sm:text-xl md:text-2xl leading-relaxed text-earthBrown/90 font-light px-4">
@@ -67,9 +75,10 @@ const SongCard = ({ song }) => {
   const thumbnail = videoId
     ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
     : "";
+  const songSlug = slugify(song.title);
 
   return (
-    <a href={`song.html?id=${song.id}`} className="block group">
+    <a href={`song-${songSlug}.html`} className="block group">
       <article className="song-card bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transform group-hover:-translate-y-3 transition-all duration-500 border-2 border-sageGreen/20 group-hover:border-deepRed/40">
         <div className="relative overflow-hidden h-56">
           <img
@@ -120,12 +129,12 @@ const App = () => {
   }, [query]);
 
   const handleNavigation = (section) => {
-    if (section === 'songs' && songsSectionRef.current) {
-      songsSectionRef.current.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
     if (section === 'home') {
       window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    if (section === 'songs' && songsSectionRef.current) {
+      songsSectionRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
 
