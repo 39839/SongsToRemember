@@ -42,42 +42,58 @@ const Navigation = ({ onNavigate }) => {
   ];
 
   const linkClass =
-    "relative px-4 py-2 text-sm tracking-[0.3em] uppercase font-semibold text-earthBrown hover:text-deepRed transition-colors duration-300";
+    "relative px-5 py-2 text-[0.9rem] tracking-[0.15em] uppercase font-medium transition-colors duration-300";
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50 border-b-2 border-sageGreen/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-24">
+    <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200/60">
+      <div className="max-w-7xl mx-auto" style={{padding: '0 5%'}}>
+        <div className="flex justify-between items-center" style={{height: '85px'}}>
           <button
             type="button"
             onClick={() => handleNavigation('home')}
-            className="focus:outline-none"
+            className="focus:outline-none transition-opacity duration-300 hover:opacity-80"
             aria-label="Go to home"
           >
             <img
-              src={resolvePath('HorizontalLogo.png')}
+              src={resolvePath('NewHorizontalLogo.png')}
               alt="The Zikaron Project"
-              className="h-[68px] w-auto transform hover:scale-105 transition-transform duration-300 drop-shadow-lg"
+              className="h-[60px] w-auto"
+              style={{display: 'block'}}
             />
           </button>
 
-          <div className="hidden md:flex gap-6 items-center">
+          <div className="hidden md:flex gap-2 items-center" style={{fontFamily: 'Montserrat, -apple-system, BlinkMacSystemFont, sans-serif'}}>
             {navItems.map((item) => (
               <button
                 key={item.section}
                 onClick={() => handleNavigation(item.section)}
                 className={`${linkClass} group`}
+                style={{color: '#2C2C2C'}}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#9E3E36'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#2C2C2C'}
               >
                 {item.label}
-                <span className="absolute left-1/2 -bottom-1 w-0 h-0.5 bg-deepRed transition-all duration-300 -translate-x-1/2 group-hover:w-full"></span>
+                <span
+                  className="absolute left-1/2 -bottom-1 w-0 h-0.5 transition-all duration-300 -translate-x-1/2 group-hover:w-full"
+                  style={{backgroundColor: '#9E3E36'}}
+                ></span>
               </button>
             ))}
           </div>
 
           <button
             type="button"
-            className="md:hidden inline-flex items-center justify-center p-3 rounded-full border border-sageGreen/50 text-earthBrown hover:text-deepRed hover:border-deepRed transition-colors"
+            className="md:hidden inline-flex items-center justify-center p-3 rounded-full border transition-colors"
+            style={{borderColor: '#2C2C2C20', color: '#2C2C2C'}}
             onClick={() => setMenuOpen((prev) => !prev)}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = '#9E3E36';
+              e.currentTarget.style.color = '#9E3E36';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = '#2C2C2C20';
+              e.currentTarget.style.color = '#2C2C2C';
+            }}
             aria-label="Toggle navigation menu"
           >
             {menuOpen ? (
@@ -92,12 +108,15 @@ const Navigation = ({ onNavigate }) => {
           </button>
         </div>
         {menuOpen && (
-          <div className="md:hidden border-t border-sageGreen/30 pt-4 pb-6 space-y-3">
+          <div className="md:hidden border-t pt-4 pb-6 space-y-3" style={{borderColor: '#2C2C2C10'}}>
             {navItems.map((item) => (
               <button
                 key={item.section}
                 onClick={() => handleNavigation(item.section)}
-                className="w-full text-left px-5 py-3 rounded-2xl bg-lightBeige/80 text-earthBrown font-semibold tracking-[0.3em] uppercase text-sm"
+                className="w-full text-left px-5 py-3 rounded-2xl font-semibold tracking-[0.15em] uppercase text-sm transition-colors"
+                style={{backgroundColor: '#F2F0E4', color: '#2C2C2C'}}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#9E3E36'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#2C2C2C'}
               >
                 {item.label}
               </button>
@@ -118,7 +137,7 @@ const Footer = () => (
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-20">
       <div className="flex flex-col items-center mb-16">
         <img
-          src={resolvePath('HorizontalLogo.png')}
+          src={resolvePath('NewHorizontalLogo.png')}
           alt="The Zikaron Project"
           className="h-28 w-auto mb-8 filter brightness-0 invert opacity-95 drop-shadow-lg"
         />
