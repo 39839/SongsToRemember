@@ -47,22 +47,32 @@ const Navigation = ({ onNavigate }) => {
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200/60">
       <div className="max-w-7xl mx-auto" style={{padding: '0 5%'}}>
-        <div className="flex justify-between items-center" style={{height: '85px'}}>
-          <button
-            type="button"
-            onClick={() => handleNavigation('home')}
-            className="focus:outline-none transition-opacity duration-300 hover:opacity-80"
-            aria-label="Go to home"
-          >
-            <img
-              src={resolvePath('NewHorizontalLogo.png')}
-              alt="The Zikaron Project"
-              className="h-[60px] w-auto"
-              style={{display: 'block'}}
-            />
-          </button>
+        <div className="flex items-center justify-between" style={{height: '85px'}}>
+          {/* Logo - Left Side */}
+          <div className="flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => handleNavigation('home')}
+              className="focus:outline-none transition-opacity duration-300 hover:opacity-80"
+              aria-label="Go to home"
+            >
+              {/* Desktop Logo */}
+              <img
+                src={resolvePath('NewHorizontalLogo.png')}
+                alt="The Zikaron Project"
+                className="hidden md:block h-[60px] w-auto"
+              />
+              {/* Mobile Logo */}
+              <img
+                src={resolvePath('MobileLogo.png')}
+                alt="The Zikaron Project"
+                className="block md:hidden h-[50px] w-auto"
+              />
+            </button>
+          </div>
 
-          <div className="hidden md:flex gap-2 items-center" style={{fontFamily: 'Montserrat, -apple-system, BlinkMacSystemFont, sans-serif'}}>
+          {/* Navigation Links - Right Side */}
+          <div className="hidden md:flex gap-2 items-center ml-auto justify-end" style={{fontFamily: 'Montserrat, -apple-system, BlinkMacSystemFont, sans-serif'}}>
             {navItems.map((item) => (
               <button
                 key={item.section}
@@ -81,6 +91,7 @@ const Navigation = ({ onNavigate }) => {
             ))}
           </div>
 
+          {/* Mobile Menu Button - Right Side */}
           <button
             type="button"
             className="md:hidden inline-flex items-center justify-center p-3 rounded-full border transition-colors"
