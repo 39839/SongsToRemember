@@ -71,7 +71,7 @@ const AboutPage = () => (
           </p>
           <a
             href={`${SITE_ROOT}home/#songs`}
-            className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-deepRed via-[#a82724] to-[#7a1715] text-white rounded-full font-semibold shadow-lg hover:shadow-deepRed/40 transition-transform hover:-translate-y-1"
+            className="inline-flex items-center gap-3 px-6 py-3 bg-deepRed text-white rounded-full font-semibold shadow-lg hover:shadow-deepRed/40 transition-transform hover:-translate-y-1"
           >
             Explore the songs
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -106,7 +106,7 @@ const AboutPage = () => (
           </div>
           <div className="space-y-4 text-lg leading-relaxed text-earthBrown/90 flex-1">
             <p>
-              The flower featured in our logo is the Dam HaMaccabim HaAdom (Helichrysum sanguineum), known in English as the Maccabi blood flower. Due to its vivid red bracts, which are believed by some to resemble drops of blood, the Dam HaMaccabim HaAdom has become the official symbol of Yom HaZikaron, Israel's Memorial Day. Pins and stickers bearing this flower are worn across the country in ceremonies, echoing the legend that the plant blooms wherever the Maccabees shed their blood. As often said at the conclusion of remembrance ceremonies in Israel, "במותם ציוו לנו את החיים״. In English, this phrase translates to the words, "with their death, they commanded us to live." Just as the story of the Maccabees, the sacrifice of our fallen heroes has ensured our survival.
+              The flower featured in our logo is the Dam HaMaccabim HaAdom (Helichrysum sanguineum), known in English as the Maccabi blood flower. Due to its vivid red bracts, which are believed by some to resemble drops of blood, the Dam HaMaccabim HaAdom has become the official symbol of Yom HaZikaron, Israel's Memorial Day. Pins and stickers bearing this flower are worn across the country in ceremonies, echoing the legend that the plant blooms wherever the Maccabees shed their blood. As often said at the conclusion of remembrance ceremonies in Israel, "במותם ציוו לנו את החיים״. In English, this phrase translates to the words, "with their death, they commanded us to live." Just as in the story of the Maccabees, the sacrifice of our fallen heroes has ensured our survival.
             </p>
           </div>
         </div>
