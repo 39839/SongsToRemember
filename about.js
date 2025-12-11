@@ -106,10 +106,7 @@ const AboutPage = () => (
           </div>
           <div className="space-y-4 text-lg leading-relaxed text-earthBrown/90 flex-1">
             <p>
-              The flower woven into our emblem is the Dam HaMaccabim HaAdom (Helichrysum sanguineum), known in English as the Maccabi blood flower. Its vivid red bracts—often likened to drops of blood—have made it the official symbol of Yom HaZikaron, Israel's Memorial Day. Pins bearing this blossom are worn across the country in ceremonies, echoing the legend that the plant blooms wherever the Maccabees shed their blood.
-            </p>
-            <p>
-              "Zikaron" (זיכרון) translates to "remembrance." By pairing that word with this protected wildflower, our logo honors both the resilience of those remembered and the living commitment to keep their stories alive through song, translation, and shared ritual.
+              The flower featured in our logo is the Dam HaMaccabim HaAdom (Helichrysum sanguineum), known in English as the Maccabi blood flower. Due to its vivid red bracts, which are believed by some to resemble drops of blood, the Dam HaMaccabim HaAdom has become the official symbol of Yom HaZikaron, Israel's Memorial Day. Pins and stickers bearing this flower are worn across the country in ceremonies, echoing the legend that the plant blooms wherever the Maccabees shed their blood. As often said at the conclusion of remembrance ceremonies in Israel, "במותם ציוו לנו את החיים״. In English, this phrase translates to the words, "with their death, they commanded us to live." Just as the story of the Maccabees, the sacrifice of our fallen heroes has ensured our survival.
             </p>
           </div>
         </div>
