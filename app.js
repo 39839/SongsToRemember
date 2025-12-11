@@ -39,15 +39,15 @@ const Hero = ({ onScrollToSongs }) => (
     </div>
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
       <div className="flex flex-col items-center text-center gap-10">
-        {/* Definition Card */}
-        <div className="bg-[#F2F0E4] rounded-3xl px-12 py-10 shadow-2xl border-2 border-[#e0ddc8] max-w-3xl">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-4" style={{fontFamily: 'Cardo, Georgia, serif', color: '#8B4513'}}>
+        {/* Definition Card - 40% smaller */}
+        <div className="bg-[#F2F0E4] rounded-3xl px-7 py-6 shadow-2xl border-2 border-[#e0ddc8] max-w-xl">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3" style={{fontFamily: 'Cardo, Georgia, serif', color: '#8B4513'}}>
             Zi·ka·ron <span className="text-[#8B4513]/40">|</span> <span dir="rtl" style={{fontFamily: 'Cardo, serif'}}>זִכָּרוֹן</span>
           </h1>
-          <p className="text-xl font-bold mb-3" style={{color: '#2F4F4F', fontFamily: 'Cardo, Georgia, serif'}}>
+          <p className="text-base font-bold mb-2" style={{color: '#2F4F4F', fontFamily: 'Cardo, Georgia, serif'}}>
             noun
           </p>
-          <p className="text-lg italic" style={{fontFamily: 'Cardo, Georgia, serif', color: '#2F4F4F'}}>
+          <p className="text-sm italic" style={{fontFamily: 'Cardo, Georgia, serif', color: '#2F4F4F'}}>
             The Hebrew word for "memory" or "remembrance."
           </p>
         </div>
@@ -66,15 +66,14 @@ const Hero = ({ onScrollToSongs }) => (
 
         <button
           onClick={onScrollToSongs}
-          className="group relative px-10 py-5 bg-gradient-to-r from-deepRed via-[#a82724] to-[#7a1715] text-white text-lg font-bold rounded-full shadow-2xl hover:shadow-deepRed/40 transform hover:scale-110 transition-all duration-500 overflow-hidden"
+          className="group px-10 py-5 bg-deepRed text-white text-lg font-bold rounded-full shadow-2xl hover:shadow-deepRed/40 transform hover:scale-110 transition-all duration-500"
         >
-          <span className="relative z-10 flex items-center gap-3">
+          <span className="flex items-center gap-3">
             Explore the Collection
             <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
             </svg>
           </span>
-          <div className="absolute inset-0 bg-gradient-to-r from-[#7a1715] via-[#a82724] to-deepRed opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         </button>
       </div>
     </div>
@@ -89,8 +88,8 @@ const SongCard = ({ song }) => {
   const songSlug = slugify(song.title);
 
   return (
-    <a href={`${SITE_ROOT}songs/${songSlug}/`} className="block group">
-      <article className="song-card bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transform group-hover:-translate-y-3 transition-all duration-500 border-2 border-sageGreen/20 group-hover:border-deepRed/40">
+    <a href={`${SITE_ROOT}songs/${songSlug}/`} className="block group h-full">
+      <article className="song-card bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transform group-hover:-translate-y-3 transition-all duration-500 border-2 border-sageGreen/20 group-hover:border-deepRed/40 flex flex-col h-full">
         <div className="relative overflow-hidden h-56">
           <img
             src={thumbnail}
@@ -106,11 +105,11 @@ const SongCard = ({ song }) => {
             </div>
           </div>
         </div>
-        <div className="p-6 space-y-3 bg-gradient-to-br from-white to-lightBeige/30">
+        <div className="p-6 space-y-3 bg-gradient-to-br from-white to-lightBeige/30 flex-grow">
           <p className="text-xs uppercase tracking-[0.25em] text-oliveGreen font-bold">
             {song.artist}
           </p>
-          <h3 className="text-2xl font-bold text-earthBrown group-hover:text-deepRed transition-colors duration-400 leading-tight">
+          <h3 className="text-2xl font-bold text-earthBrown group-hover:text-deepRed transition-colors duration-400 leading-tight min-h-[4rem]">
             {song.title}
           </h3>
           {song.titleHebrew && (
@@ -157,21 +156,9 @@ const App = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
         <section id="songs" ref={songsSectionRef} className="py-24">
           <div className="text-center mb-20">
-            <div className="inline-block space-y-6">
-              <div className="flex items-center justify-center gap-4">
-                <div className="h-px w-24 bg-gradient-to-r from-transparent via-deepRed to-transparent"></div>
-                <svg className="w-6 h-6 text-deepRed animate-pulse" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-                <div className="h-px w-24 bg-gradient-to-l from-transparent via-deepRed to-transparent"></div>
-              </div>
-              <p className="text-sm uppercase tracking-[0.35em] text-oliveGreen font-bold">
-                Memorial Collection
-              </p>
-              <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-earthBrown via-deepRed to-earthBrown bg-clip-text text-transparent leading-tight pb-1 sm:pb-2">
-                13 Songs of Remembrance
-              </h2>
-            </div>
+            <h2 className="text-[2.875rem] md:text-[3.375rem] font-bold bg-gradient-to-r from-earthBrown via-deepRed to-earthBrown bg-clip-text text-transparent leading-tight pb-1 sm:pb-2">
+              Songs of Remembrance
+            </h2>
           </div>
 
           <div className="max-w-2xl mx-auto mb-20">

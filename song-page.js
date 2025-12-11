@@ -133,28 +133,31 @@ const SongPage = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-10">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 border-b-2 border-oliveGreen/40 pb-4">
-              <svg className="w-6 h-6 text-deepRed" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z" />
-              </svg>
-              <h3 className="text-xl font-bold text-earthBrown">English Lyrics</h3>
-            </div>
-            <div className="english-lyrics whitespace-pre-line bg-white border-2 border-sageGreen/30 rounded-3xl p-7 shadow-lg text-earthBrown text-base leading-relaxed">
-              {song.lyricsEnglish}
-            </div>
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 border-b-2 border-oliveGreen/40 pb-4">
+            <svg className="w-6 h-6 text-deepRed" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z" />
+            </svg>
+            <h3 className="text-xl font-bold text-earthBrown">Lyrics</h3>
           </div>
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 border-b-2 border-oliveGreen/40 pb-4">
-              <svg className="w-6 h-6 text-deepRed" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z" />
-              </svg>
-              <h3 className="text-xl font-bold text-earthBrown">Hebrew Lyrics</h3>
-            </div>
-            <div className="hebrew-lyrics whitespace-pre-line bg-white border-2 border-sageGreen/30 rounded-3xl p-7 shadow-lg text-earthBrown text-base leading-relaxed">
-              {song.lyricsHebrew}
-            </div>
+          <div className="bg-white border-2 border-sageGreen/30 rounded-3xl p-7 shadow-lg space-y-6">
+            {song.lyrics && song.lyrics.map((line, index) => (
+              <div key={index} className="space-y-2">
+                {line.he && (
+                  <p className="text-lg text-deepRed/90 font-['Heebo'] leading-relaxed" dir="rtl">
+                    {line.he}
+                  </p>
+                )}
+                {line.en && (
+                  <p className="text-base text-earthBrown/80 leading-relaxed">
+                    {line.en}
+                  </p>
+                )}
+                {index < song.lyrics.length - 1 && line.he && line.en && (
+                  <div className="h-px bg-sageGreen/20 my-4"></div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </main>
