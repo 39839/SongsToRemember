@@ -148,12 +148,17 @@ const SongPage = () => {
                     {line.he}
                   </p>
                 )}
+                {line.tr && (
+                  <p className="text-base italic text-oliveGreen/75 leading-relaxed">
+                    {line.tr}
+                  </p>
+                )}
                 {line.en && (
                   <p className="text-base text-earthBrown/80 leading-relaxed">
                     {line.en}
                   </p>
                 )}
-                {index < song.lyrics.length - 1 && line.he && line.en && (
+                {index < song.lyrics.length - 1 && line.he && (
                   <div className="h-px bg-sageGreen/20 my-4"></div>
                 )}
               </div>
