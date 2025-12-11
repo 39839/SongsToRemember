@@ -52,6 +52,16 @@ const AboutPage = () => (
     </header>
 
     <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-24 space-y-16">
+      <section className="bg-gradient-to-br from-white via-[#fefdfb] to-lightBeige/20 border-2 border-deepRed/30 rounded-3xl shadow-2xl p-10 space-y-6">
+        <p className="text-sm uppercase tracking-[0.35em] text-deepRed font-bold">Our Story</p>
+        <h2 className="text-4xl font-bold text-earthBrown">The Zikaron Project: Our Origins</h2>
+        <article className="space-y-6 text-earthBrown/90 text-lg leading-relaxed">
+          {aboutParagraphs.map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
+        </article>
+      </section>
+
       <section className="grid lg:grid-cols-2 gap-10">
         <div className="bg-white/95 border-2 border-sageGreen/40 rounded-3xl shadow-2xl p-10 space-y-6">
           <p className="text-sm uppercase tracking-[0.35em] text-oliveGreen font-bold">Our Mission</p>
@@ -76,9 +86,9 @@ const AboutPage = () => (
             These translations help Hebrew and English speakers learn, teach, and mourn together. They are designed for classrooms, ceremonies, and personal reflection.
           </p>
           <ul className="list-disc list-inside text-earthBrown/80 space-y-2">
-            <li>Authentic translations that preserve poetic nuance</li>
-            <li>Visual storytelling that honors each song's origin</li>
-            <li>Contextual essays that frame the historical moment</li>
+            <li>Thoughtful translations aiming to preserve poetic nuance</li>
+            <li>Contextual backgrounds that honor each song's origin</li>
+            <li>Visual storytelling to engage non-Hebrew speakers</li>
           </ul>
         </div>
       </section>
@@ -86,31 +96,23 @@ const AboutPage = () => (
       <section className="bg-white border-2 border-oliveGreen/30 rounded-3xl shadow-2xl p-10 space-y-5">
         <p className="text-sm uppercase tracking-[0.35em] text-oliveGreen font-bold">About Our Logo</p>
         <h2 className="text-3xl font-bold text-earthBrown">Dam HaMaccabim & the Promise of Zikaron</h2>
-        <div className="grid lg:grid-cols-2 gap-10 items-stretch">
-          <div className="rounded-3xl shadow-lg border border-sageGreen/40 overflow-hidden">
+        <div className="flex flex-col lg:flex-row gap-10 items-center">
+          <div className="rounded-3xl shadow-lg border border-sageGreen/40 overflow-hidden flex-shrink-0" style={{width: '325px', height: '325px'}}>
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/DamHamacabim_ST_06.jpg/500px-DamHamacabim_ST_06.jpg"
               alt="Dam HaMaccabim HaAdom flower"
               className="w-full h-full object-cover"
             />
           </div>
-          <div className="space-y-4 text-lg leading-relaxed text-earthBrown/90 h-full flex flex-col justify-center">
+          <div className="space-y-4 text-lg leading-relaxed text-earthBrown/90 flex-1">
             <p>
-              The flower woven into our emblem is the Dam HaMaccabim HaAdom (Helichrysum sanguineum), known in English as the Maccabi blood flower. Its vivid red bracts—often likened to drops of blood—have made it the official symbol of Yom HaZikaron, Israel’s Memorial Day. Pins bearing this blossom are worn across the country in ceremonies, echoing the legend that the plant blooms wherever the Maccabees shed their blood.
+              The flower woven into our emblem is the Dam HaMaccabim HaAdom (Helichrysum sanguineum), known in English as the Maccabi blood flower. Its vivid red bracts—often likened to drops of blood—have made it the official symbol of Yom HaZikaron, Israel's Memorial Day. Pins bearing this blossom are worn across the country in ceremonies, echoing the legend that the plant blooms wherever the Maccabees shed their blood.
             </p>
             <p>
-              “Zikaron” (זיכרון) translates to “remembrance.” By pairing that word with this protected wildflower, our logo honors both the resilience of those remembered and the living commitment to keep their stories alive through song, translation, and shared ritual.
+              "Zikaron" (זיכרון) translates to "remembrance." By pairing that word with this protected wildflower, our logo honors both the resilience of those remembered and the living commitment to keep their stories alive through song, translation, and shared ritual.
             </p>
           </div>
         </div>
-      </section>
-
-      <section className="bg-white/95 backdrop-blur-sm border-2 border-sageGreen/30 rounded-3xl shadow-2xl p-10">
-        <article className="space-y-6 text-earthBrown/90 text-lg leading-relaxed">
-          {aboutParagraphs.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
-        </article>
       </section>
     </main>
 
