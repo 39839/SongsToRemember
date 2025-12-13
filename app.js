@@ -109,11 +109,11 @@ const SongCard = ({ song }) => {
           <p className="text-xs uppercase tracking-[0.25em] text-oliveGreen font-bold">
             {song.artist}
           </p>
-          <h3 className="text-2xl font-bold text-earthBrown group-hover:text-deepRed transition-colors duration-400 leading-tight min-h-[4rem]">
+          <h3 className="text-2xl font-bold text-earthBrown group-hover:text-deepRed transition-colors duration-400 leading-tight">
             {song.title}
           </h3>
           {song.titleHebrew && (
-            <p className="text-base text-earthBrown/70 font-['Heebo'] leading-relaxed" dir="rtl">
+            <p className="text-xl font-semibold text-earthBrown group-hover:text-deepRed font-['Heebo'] leading-relaxed transition-colors duration-400" dir="rtl">
               {song.titleHebrew}
             </p>
           )}
