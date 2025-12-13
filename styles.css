@@ -280,3 +280,48 @@ footer {
   background-color: #7a1916;
   transform: scale(1.1);
 }
+
+/* Memorial Carousel Styles */
+.memorial-carousel-wrapper {
+  position: relative;
+  padding: 0 50px;
+}
+
+.memorial-carousel-wrapper .swiper-button-prev,
+.memorial-carousel-wrapper .swiper-button-next {
+  width: 40px;
+  height: 40px;
+  background-color: rgba(182, 193, 151, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.memorial-carousel-wrapper .swiper-button-prev:hover,
+.memorial-carousel-wrapper .swiper-button-next:hover {
+  background-color: rgba(182, 193, 151, 0.4);
+  transform: scale(1.1);
+}
+
+.memorial-carousel-wrapper .swiper-button-prev::after,
+.memorial-carousel-wrapper .swiper-button-next::after {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+@media (max-width: 640px) {
+  .memorial-carousel-wrapper {
+    padding: 0 35px;
+  }
+
+  .memorial-carousel-wrapper .swiper-button-prev,
+  .memorial-carousel-wrapper .swiper-button-next {
+    width: 30px;
+    height: 30px;
+  }
+
+  .memorial-carousel-wrapper .swiper-button-prev::after,
+  .memorial-carousel-wrapper .swiper-button-next::after {
+    font-size: 16px;
+  }
+}

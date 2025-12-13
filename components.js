@@ -1,4 +1,4 @@
-const { useState } = React;
+const { useState, useEffect, useRef } = React;
 
 const SITE_ROOT = (typeof window !== 'undefined' && window.__SITE_ROOT__) || './';
 
@@ -139,7 +139,139 @@ const Navigation = ({ onNavigate }) => {
   );
 };
 
-const Footer = () => (
+const MemorialCarousel = () => {
+  const swiperRef = useRef(null);
+  const containerRef = useRef(null);
+
+  const fallenSoldiers = [
+    { name: "Itzhak (Itzik) Amir", rank: "Private", image: "https://izkorimagescdn.azureedge.net/fallenimages/515535.jpg" },
+    { name: "Arie Hershkovitch", rank: "Private", image: "https://izkorimagescdn.azureedge.net/fallenimages/no_fallen_image.jpg" },
+    { name: "Nisim (Avner) Tarango", rank: "First Corporal", image: "https://izkorimagescdn.azureedge.net/fallenimages/004315.jpg" },
+    { name: "Yehezkel Mukmal", rank: "", image: "https://izkorimagescdn.azureedge.net/fallenimages/no_fallen_image.jpg" },
+    { name: "Alon (Aloni) Yigali", rank: "Corporal", image: "https://izkorimagescdn.azureedge.net/fallenimages/512243.jpg" },
+    { name: "Yaakov (Yankale) Yafe", rank: "Sergeant", image: "https://izkorimagescdn.azureedge.net/fallenimages/097537.jpg" },
+    { name: "Shalom (Sherly) Algam", rank: "Lance corporal", image: "https://izkorimagescdn.azureedge.net/fallenimages/098654.jpg" },
+    { name: "Shalom (Sharel) Ohaion", rank: "Private", image: "https://izkorimagescdn.azureedge.net/fallenimages/008038.jpg" },
+    { name: "David Shimonovitch", rank: "", image: "https://izkorimagescdn.azureedge.net/fallenimages/515867.jpg" },
+    { name: "Benyamin Gratner", rank: "", image: "https://izkorimagescdn.azureedge.net/fallenimages/no_fallen_image.jpg" },
+    { name: "Matan Polivoda", rank: "Staff Sergeant", image: "https://izkorimagescdn.azureedge.net/fallenimages/514739.jpg" },
+    { name: "Guy Leo", rank: "Sergeant", image: "https://izkorimagescdn.azureedge.net/fallenimages/515787.jpg" },
+    { name: "Moshe Ziporin", rank: "Private", image: "https://izkorimagescdn.azureedge.net/fallenimages/004109.jpg" },
+    { name: "Edgar Dreifus", rank: "First Lieutenant", image: "https://izkorimagescdn.azureedge.net/fallenimages/090638.jpg" },
+    { name: "Naftali-Yonah Gordon", rank: "Master Sergeant", image: "https://izkorimagescdn.azureedge.net/fallenimages/519335.jpg" }
+  ];
+
+  useEffect(() => {
+    if (containerRef.current && typeof Swiper !== 'undefined') {
+      swiperRef.current = new Swiper(containerRef.current, {
+        slidesPerView: 'auto',
+        spaceBetween: 15,
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+        breakpoints: {
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 15,
+          },
+          768: {
+            slidesPerView: 3,
+            spaceBetween: 20,
+          },
+          1024: {
+            slidesPerView: 4,
+            spaceBetween: 20,
+          },
+        },
+      });
+    }
+
+    return () => {
+      if (swiperRef.current && swiperRef.current.destroy) {
+        swiperRef.current.destroy();
+      }
+    };
+  }, []);
+
+  return (
+    <div className="memorial-carousel-wrapper">
+      <div ref={containerRef} className="swiper">
+        <div className="swiper-wrapper">
+          {fallenSoldiers.map((soldier, index) => (
+            <div key={index} className="swiper-slide" style={{width: '200px'}}>
+              <div className="bg-white/10 rounded-lg overflow-hidden shadow-lg backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300">
+                <div className="aspect-square overflow-hidden bg-gray-200">
+                  <img
+                    src={soldier.image}
+                    alt={soldier.name}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="p-3 text-center">
+                  {soldier.rank && <p className="text-xs text-sageGreen/90 mb-1">{soldier.rank}</p>}
+                  <p className="text-sm font-medium text-lightBeige">{soldier.name}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="swiper-button-prev" style={{color: '#B6C197'}}></div>
+        <div className="swiper-button-next" style={{color: '#B6C197'}}></div>
+      </div>
+    </div>
+  );
+};
+
+const FOOTER_QUOTES = [
+  {
+    hebrew: "וְעַתָּ֗ה כִּתְב֤וּ לָכֶם֙ אֶת־הַשִּׁירָ֣ה הַזֹּ֔את וְלַמְּדָ֥הּ אֶת־בְּנֵֽי־יִשְׂרָאֵ֖ל שִׂימָ֣הּ בְּפִיהֶ֑ם לְמַ֨עַן תִּֽהְיֶה־לִּ֜י הַשִּׁירָ֥ה הַזֹּ֛את לְעֵ֖ד בִּבְנֵ֥י יִשְׂרָאֵֽל׃",
+    english: '"And now, write for yourselves this song, and teach it to the Children of Israel. Place it into their mouths, in order that this song will be for Me as a witness for the children of Israel."',
+    reference: "Deuteronomy 31:19"
+  },
+  {
+    hebrew: "הַצְּבִי יִשְׂרָאֵל עַל־בָּמוֹתֶיךָ חָלָל אֵיךְ נָפְלוּ גִבּוֹרִים",
+    english: '"The glory of Israel lies slain upon your high places. How the mighty have fallen!"',
+    reference: "2 Samuel 1:19"
+  },
+  {
+    hebrew: "מִנְּשָׁרִים קַלּוּ מֵאֲרָיוֹת גָּבֵרוּ",
+    english: '"They were swifter than eagles, they were stronger than lions."',
+    reference: "2 Samuel 1:23"
+  },
+  {
+    hebrew: "וְנָתַתִּי לָהֶם בְּבֵיתִי וּבְחוֹמֹתַי יָד וָשֵׁם... שֵׁם עוֹלָם אֶתֶּן־לוֹ אֲשֶׁר לֹא יִכָּרֵת",
+    english: '"And I will give them in My house and within My walls a memorial and a name... an everlasting name that shall not be cut off."',
+    reference: "Isaiah 56:5"
+  },
+  {
+    hebrew: "זֵכֶר צַדִּיק לִבְרָכָה",
+    english: '"The memory of the righteous is a blessing."',
+    reference: "Proverbs 10:7"
+  }
+];
+
+const Footer = () => {
+  const [currentQuote, setCurrentQuote] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentQuote((prev) => (prev + 1) % FOOTER_QUOTES.length);
+    }, 8000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const nextQuote = () => {
+    setCurrentQuote((prev) => (prev + 1) % FOOTER_QUOTES.length);
+  };
+
+  const prevQuote = () => {
+    setCurrentQuote((prev) => (prev - 1 + FOOTER_QUOTES.length) % FOOTER_QUOTES.length);
+  };
+
+  return (
   <footer className="mt-32 bg-gradient-to-br from-earthBrown via-[#7a6751] to-[#6b5943] text-lightBeige relative overflow-hidden">
     <div className="absolute inset-0 opacity-10">
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white rounded-full blur-3xl"></div>
@@ -155,24 +287,79 @@ const Footer = () => (
         <div className="w-32 h-px bg-gradient-to-r from-transparent via-sageGreen to-transparent"></div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16">
-        <div className="text-center md:text-left space-y-4">
-          <h3 className="font-bold text-2xl text-sageGreen">About This Project</h3>
-          <p className="text-base text-lightBeige/85 leading-relaxed">
-            Honoring the memory of fallen soldiers and victims through translated Hebrew remembrance songs. Created by Naama Ben-Dor.
-          </p>
-        </div>
-        <div className="text-center space-y-4">
-          <h3 className="font-bold text-2xl text-sageGreen">In Memory</h3>
-          <p className="text-base text-lightBeige/85 leading-relaxed">
-            In remembrance of the fallen soldiers of the IDF, victims of the Holocaust, and all victims of hate worldwide.
-          </p>
-        </div>
-        <div className="text-center md:text-right space-y-4">
-          <h3 className="font-bold text-2xl text-sageGreen">Educational Tool</h3>
-          <p className="text-base text-lightBeige/85 leading-relaxed">
-            Serving as a bridge between Jewish communities worldwide and as an educational resource for Hebrew and English educators.
-          </p>
+      {/* Quote Carousel */}
+      <div className="mb-12">
+        <div className="max-w-4xl mx-auto relative">
+          <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 md:p-10 shadow-xl border border-white/10 relative overflow-hidden">
+            {/* Navigation Arrows */}
+            <button
+              onClick={prevQuote}
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-sageGreen/20 hover:bg-sageGreen/40 backdrop-blur-sm flex items-center justify-center transition-all duration-300 hover:scale-110 z-10"
+              aria-label="Previous quote"
+            >
+              <svg className="w-5 h-5 text-lightBeige" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={nextQuote}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-sageGreen/20 hover:bg-sageGreen/40 backdrop-blur-sm flex items-center justify-center transition-all duration-300 hover:scale-110 z-10"
+              aria-label="Next quote"
+            >
+              <svg className="w-5 h-5 text-lightBeige" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+
+            {/* Quote Content */}
+            <div className="px-8 md:px-12">
+              {/* Hebrew Text */}
+              <div className="mb-6 text-center transition-opacity duration-1000">
+                <p className="text-xl md:text-2xl font-serif text-lightBeige leading-relaxed"
+                   style={{direction: 'rtl', fontFamily: 'Frank Ruhl Libre, serif', lineHeight: '1.8'}}>
+                  {FOOTER_QUOTES[currentQuote].hebrew}
+                </p>
+              </div>
+
+              {/* Small Divider */}
+              <div className="flex items-center justify-center my-6">
+                <div className="w-16 h-px bg-gradient-to-r from-transparent via-sageGreen to-transparent"></div>
+                <div className="mx-3 w-1.5 h-1.5 rounded-full bg-sageGreen"></div>
+                <div className="w-16 h-px bg-gradient-to-r from-transparent via-sageGreen to-transparent"></div>
+              </div>
+
+              {/* English Translation */}
+              <div className="mb-4 text-center transition-opacity duration-1000">
+                <p className="text-base md:text-lg italic text-lightBeige/90 leading-relaxed"
+                   style={{fontFamily: 'Cardo, serif'}}>
+                  {FOOTER_QUOTES[currentQuote].english}
+                </p>
+              </div>
+
+              {/* Reference */}
+              <div className="text-center transition-opacity duration-1000">
+                <p className="text-sm text-sageGreen/90 font-medium tracking-wide">
+                  — {FOOTER_QUOTES[currentQuote].reference} —
+                </p>
+              </div>
+
+              {/* Progress Dots */}
+              <div className="flex items-center justify-center gap-2 mt-6">
+                {FOOTER_QUOTES.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentQuote(index)}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      index === currentQuote
+                        ? 'bg-sageGreen w-8'
+                        : 'bg-lightBeige/30 hover:bg-lightBeige/50'
+                    }`}
+                    aria-label={`Go to quote ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -186,6 +373,7 @@ const Footer = () => (
       </div>
     </div>
   </footer>
-);
+  );
+};
 
-window.SharedComponents = { Navigation, Footer };
+window.SharedComponents = { Navigation, Footer, MemorialCarousel };

@@ -10,7 +10,7 @@ const missionStatement = "These videos are part of my project to translate Hebre
 const aboutEssay = `
 When I was a kid, one of the ways my family attempted to maintain our connection to Israeli culture from afar was by tuning into Israeli TV shows every now and then. One of my favorites was a reality show called "בית ספר למוזיקה," or "Music School,"— essentially a singing competition for kids. To this day, I remember the performance of nine-year-old Gaya Maman, who auditioned with the song "Elifelet." As she began to sing, the audience, judges, and my parents all became visibly stunned. Since I could not understand the words, which were written in a Tanakhic style of Hebrew, I did not understand their reactions. Confused, my brothers and I asked my mom to explain the song to us, and she did. We went over each word, dissecting the story of a weird and socially estranged boy who launches himself onto a grenade to protect his fellow soldiers. I was the same age as Gaya at the time.
 
-That same year I joined Washington D.C.'s branch of Israeli Scouts, where I attended my first remembrance ceremonies commemorating Israel's national remembrance days for the Holocaust, for the assassination of Israeli prime minister Yitzhak Rabin, and for the fallen soldiers of the IDF and victims of terror. My Hebrew was not advanced enough to understand most of the speeches read at these events— but when the band began playing remembrance songs, the emotion hit me like a truck. As a nine-year-old girl, I had never before identified with topics like love and heartbreak that characterized most of the pop songs I had heard on the radio. But these songs felt different: they were an expression of longing and pain and grief for the men and women who I knew sacrificed their own lives to protect my own. In a way, these songs were personal. And even when the language was too advanced for me, the tune and the melody conveyed what the words did not.
+That same year I joined Washington D.C.'s branch of Israeli Scouts, where I attended my first remembrance ceremonies commemorating Israel's national remembrance days for the Holocaust, for the fallen soldiers of the IDF and victims of terror, and for the assassination of Israeli prime minister Yitzhak Rabin. My Hebrew was not advanced enough to understand most of the speeches read at these events— but when the band began playing remembrance songs, the emotion hit me like a truck. As a nine-year old girl, I had never before identified with topics like love and heartbreak that characterized most of the pop songs I'd heard on the radio. But these songs felt different: they were an expression of longing and pain and grief for the men and women who I knew sacrificed their own lives to protect my own. In a way, these songs were personal. And even when the language was too advanced for me, the tune and the melody conveyed what the words didn't.
 
 As I continued to grow up in the United States, I discovered that remembrance customs and traditions like the ceremonies I had attended were unique to Israel. They offered me a sense of identification with my people and the Israeli community; one that, until recently, I had never felt particularly compelled to project outwards.
 
@@ -30,9 +30,39 @@ Now, as our people face new challenges and tragedies that we cannot allow oursel
 
 With the revival of the Hebrew language in the late 19th century and the establishment of the state of Israel, as well as a growing hostility towards Jews worldwide, the Jewish people face both unprecedented challenges and unprecedented tools. Ultimately, we cannot fight the dehumanization of Jews with facts and military strategies alone—nor can Jews maintain their sense of peoplehood and shared identity, in an increasingly secular world, through scripture and prayer alone. By translating Hebrew remembrance songs and creating visually engaging lyric videos, my project aims to provide a means for Jews and non-Jews alike to connect to the Israeli—and thereby Jewish—story, and in the process to commemorate and eternalize the lives of those we have lost.`;
 
-const aboutParagraphs = aboutEssay.split(/\n\s*\n/);
+const aboutEssayHebrew = `
+כשהייתי ילדה, אחת הדרכים שבהן משפחתי ניסתה לשמור על הקשר שלנו לתרבות הישראלית מרחוק הייתה על ידי צפייה מדי פעם בתוכניות טלוויזיה ישראליות. אחת התוכניות האהובות עליי הייתה תוכנית ריאליטי בשם "בית ספר למוזיקה" - בעצם תחרות שירה לילדים. עד היום אני זוכרת את ההופעה של גאיה ממן בת התשע, שנבחנה לשיר "אליפלט". כשהיא החלה לשיר, הקהל, השופטים וההורים שלי, מאוד התרגשו. מכיוון שלא הבנתי את המילים, שנכתבו בעברית גבוהה, לא הבנתי את תגובותיהם. מבולבלים, אחיי ואני ביקשנו מאמא שלי להסביר לנו את השיר, והיא עשתה זאת. עברנו על כל מילה, וניתחנו את סיפורו של ילד מוזר ומנוכר חברתית שמשגר את עצמו על רימון כדי להגן על חבריו החיילים. הייתי בגילה של גאיה באותה תקופה.
 
-const AboutPage = () => (
+באותה שנה הצטרפתי לסניף הצופים של וושינגטון דיסי, שם השתתפתי בטקסי הזיכרון הראשונים לציון ימי הזיכרון הלאומיים לשואה, לחללי צה״ל ולרצח רבין  , באותה התקופה העיברית שלי עוד לא היתה מספיק טובה כדי להבין את רוב מה שנאמר בארועים האלה - אבל כשהלהקה החלה לנגן שירי זיכרון, הרגש הכה בי חזק. כילדה בת תשע, מעולם לא הזדהיתי קודם לכן עם נושאים כמו אהבה ושברון לב שאפיינו את רוב שירי הפופ ששמעתי ברדיו. אבל השירים האלה הרגישו שונים: הם היו ביטוי של געגוע, כאב ואבל על הצעירים שהקריבו את חייהם כדי להגן על חייי. במובן מסוים, השירים האלה היו אישיים. וגם כשהשפה הייתה גבוהה מדי בשבילי, המנגינה העבירה את מה שהמילים לא העבירו.
+
+ככל שהמשכתי לגדול בארצות הברית, גיליתי שמנהגים ומסורות זיכרון כמו הטקסים בהם השתתפתי היו ייחודיים לישראל. הם הציעו לי תחושת הזדהות עם עמי ועם הקהילה הישראלית; תחושת הזדהות שעד לאחרונה מעולם לא הרגשתי צורך מיוחד להקרין החוצה.
+
+בעקבות אירועי ה-7 באוקטובר 2023, התחוורו לי שתי תובנות עיקריות. ראשית, התגלתה לי נוכחותה, עוצמתה ותפוצתה של האנטישמיות בסביבתי. אך בו זמנית, אחדות הקהילה היהודית בישראל ובחו"ל הפכה מוחשית עוד יותר. לפני ה-7 באוקטובר, הרגשתי שמוצאי הישראלי מפריד ביני לבין עמיתיי היהודים; אך כאשר גלי שנאה יהודית החלו שוב לעלות ברחבי העולם, ההבדלים בינינו נעלמו זמנית וזהותנו הקולקטיבית התחזקה. צפיתי בחבריי היהודים-אמריקאים נאבקים, לא פחות ממני, להתמודד עם הצער והמצוקה שנפלו על עמנו, וכך גם הם הרגישו חסרי אונים ומבודדים בגלל המרחק הפיזי מקהילתנו הישראלית האבלה והכאובה. אבל בעוד שמצאתי נחמה בשירי הזיכרון שביטאו את הכאב שחשתי וסיפקו דרך להתחבר עם ישראלים בחו"ל, לחבריי היהודים-אמריקאים דוברי האנגלית לא הייתה אפשרות כזו.
+
+מעבר לתחושת הצורך הגוברת שלי לשתף את המוזיקה הזו עם חבריי היהודים, פיתחתי רצון נפרד לשתף אותה גם עם לא יהודים. בכל יום, כשהתעוררתי לכותרות חדשות שהציגו ילדים פלסטינים או ציוד צבאי ישראלי, שמתי לב לדפוס בולט בנרטיב העולמי שחולק על המלחמה, ולחסר בתגובת הקהילה היהודית אליה, באמריקה כמו בישראל. המחנה האנטי-ישראלי נקט באסטרטגיית דה-הומניזציה חזקה נגד ישראלים. על ידי הצגת תמונות של ילדים רזים ומבנים מתפוררים, וקידום מונחים חסרי בסיס ומסיתים כמו "רצח עם", הם ציירו במרומז נרטיב של כאב ותוקפנות חד-צדדיים שהדהדו תכנים אנטישמיים היסטוריים המתארים יהודים כצמאי דם, אכזריים ולא אנושיים.
+
+בתגובה, פעילים ישראלים ענו לטענותיהם השקריות באמצעות הסברה: הסברים משפטיים המפריכים האשמות כמו רצח עם, בדיקת עובדות של תמונות של ילדים שהוצגו מורעבים ושבדיעבד גילו כי הם סובלים מבעיות רפואיות הגורמות למראה שלהם, ותדרוך לצופים על ההיסטוריה של הסכסוך הישראלי-פלסטיני. כפי שלמדתי דרך אינטראקציה בלתי נשכחת במיוחד בבית הספר שלי, מאמצים אלה, למרות שהם הכרחיים, אינם מספיקים. מספר שבועות לאחר ה-7 באוקטובר 2023, עברתי ליד תלמיד שחילק עלוני "הפסקת אש עכשיו!" בדרכי לשיעור. זמן קצר לאחר האלימות הנוראית של המתקפות, נדהמתי מהקריאה להפסקת אש, והחלטתי לשאול אותו האם הוא מסכים שלישראל יש אחריות למגר את חמאס ומהי תגובה הולמת יותר למתקפה בקנה מידה ובברבריות שכזו. בתגובה, הוא אמר שהסיבה שהוא מגנה את המלחמה הזו היא משום שלישראל יש צבא כה חזק ומתקדם מבחינה טכנולוגית, שהם ולכן ישראל יכלה להימנע לחלוטין מאבדות אזרחיות אם רצתה בכך.
+
+מחשבותיי חזרו מיד לקריקטורה מתקופת הנאצים, המתארת יהודי כ​​אמן בובות  מפלצתי וכל יכול, המושך בחוטי העולם בלעג מרושע. בעיניו, הבנתי, ישראל היא ישות חסרת לב וכל יכולה, המסוגלת לכל דבר ולכן אשמה בכל טעות אנוש שניתן להצדיק או לתרץ כתוצאה בלתי נמנעת של מלחמה עבור כל מדינה אחרת המבקשת באופן דומה לנקום ולעסוק בהגנה עצמית. כיצד, חשבתי, עמיתיי בארצות הברית לא מבינים שבמדינה עם שירות צבאי חובה, שבה אחוז כה גבוה של הורים חייב לשלוח את ילדיהם לקרבות - מלחמה היא אירוע מפחיד ביותר? כיצד יכלו שלא להבין שאנחנו נלחמים על חיינו ועל זכותנו להתקיים בבטחה? הבנתי שעל ידי מיקוד מאמצינו לחלוטין במאבק בהאשמות השקריות שהועלו נגד עמנו, נכשלנו לשתף את הסיפור שלנו ואת הכאב שלנו.
+
+במשך מאות שנים של קשיים והפרדה מרחבית, העם היהודי השתמש בטקסט היסודי של אבותיו כדי לאגד את אומתו. אנו רואים דוגמאות רבות לכך בתנ"ך עצמו; כאשר הוביל את בני ישראל ממצרים, משה מורה להם לציין את האירוע שנה אחר שנה, ו"הסבירו לילדכם ביום ההוא, 'בגלל אשר עשה לי יהוה בצאתי ממצרים'" (שמות י"ג, ח').
+
+הקמת בית הכנסת היא עצמה עדות לתפקידה של שפה משותפת, עברית, באיחוד עמנו. לאחר חורבן בית המקדש השני, כאשר יהודים לא יכלו עוד לעבוד את אלוהים באמצעות קורבנות, הם החלו לעבוד את אלוהים באמצעות תפילה - להתאסף בכל מקום בו היו, ולזכור את סיפורי אבותיהם המתועדים בתנ"ך.
+
+כעת, כאשר עמנו מתמודד עם אתגרים וטרגדיות חדשות שאיננו יכולים להרשות לעצמנו לשכוח, עלינו למצוא דרכים חדשות לזכור. כשם שטקסט ומוזיקה היו חיוניים בשימור הזיכרון הלאומי של דורות של יהודים, שירי זיכרון כבר הפכו לשיטה חיונית בקרב ישראלים בני זמננו לתיעוד חוויותיהם המשותפות. מאז 1951, כאשר דוד בן-גוריון הקים את "המועצה הציבורית להנצחת החיילים" אשר קבעה את יום ד' באייר כ"יום זיכרון כללי לגיבורי מלחמת העצמאות" (שנחקק מאוחר יותר ב-1963), אזרחי ישראל מציינים את התאריך מדי שנה בטקסי זיכרון ארציים וצפירת צפירה בת שתי דקות לציון דקת דומיה ברחבי הארץ לכבוד הנופלים. בטקסי יום הזיכרון ובאירועים כמו שירה בציבור, מוזיקה הפכה לכלי עבור ישראלים לספר את חוויותיהם ולמצוא נחמה זה בזה. לכן, מוזיקה זו היא שיכולה להצליח לחבר את העם היהודי שוב, ולשמש כביטוי האמיתי ביותר לכאבו, לאנושיותו ולאומיותו. כשם שתרגומי התורה היו חיוניים בשמירה על הזהות היהודית לאורך מאות שנים של תפוצות, גם תרגום שירי זיכרון יכול לגשר על הפער בין הקהילות היהודיות של ימינו - ובין העולם היהודי לעולם הלא-יהודי. עם תחיית השפה העברית בסוף המאה ה-19 והקמת מדינת ישראל, כמו גם עוינות גוברת כלפי יהודים ברחבי העולם, העם היהודי מתמודד עם אתגרים חסרי תקדים וכלים חסרי תקדים. בסופו של דבר, איננו יכולים להילחם בדה-הומניזציה של יהודים באמצעות עובדות ואסטרטגיות צבאיות בלבד - וגם לא יכולים יהודים לשמר את תחושת האנושיות והזהות המשותפת שלהם, בעולם שהופך לחילוני יותר ויותר, באמצעות כתבי קודש ותפילה בלבד. על ידי תרגום שירי זיכרון עבריים ויצירת סרטוני ליריקה מרתקים ויזואלית, הפרויקט שלי שואף לספק אמצעי ליהודים ולא יהודים כאחד להתחבר לסיפור הישראלי - ולכן היהודי - ובתוך כך להנציח ולהנציח את חייהם של אלה שאיבדנו.`;
+
+const aboutParagraphs = aboutEssay.split(/\n\s*\n/);
+const aboutParagraphsHebrew = aboutEssayHebrew.split(/\n\s*\n/);
+
+const { useState } = React;
+
+const AboutPage = () => {
+  const [language, setLanguage] = useState('english');
+
+  const currentParagraphs = language === 'english' ? aboutParagraphs : aboutParagraphsHebrew;
+  const isHebrew = language === 'hebrew';
+
+  return (
   <div className="min-h-screen bg-gradient-to-br from-[#faf9f5] via-[#f5f3eb] to-[#ebe8dc]">
     <Navigation />
     <header className="relative overflow-hidden bg-gradient-to-br from-[#faf9f5] via-[#f5f3eb] to-[#ebe8dc] text-earthBrown py-24">
@@ -53,10 +83,40 @@ const AboutPage = () => (
 
     <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-24 space-y-16">
       <section className="bg-gradient-to-br from-white via-[#fefdfb] to-lightBeige/20 border-2 border-deepRed/30 rounded-3xl shadow-2xl p-10 space-y-6">
-        <p className="text-sm uppercase tracking-[0.35em] text-deepRed font-bold">Our Story</p>
-        <h2 className="text-4xl font-bold text-earthBrown">The Zikaron Project: Our Origins</h2>
-        <article className="space-y-6 text-earthBrown/90 text-lg leading-relaxed">
-          {aboutParagraphs.map((paragraph, index) => (
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="text-sm uppercase tracking-[0.35em] text-deepRed font-bold">Our Story</p>
+            <h2 className="text-4xl font-bold text-earthBrown">The Zikaron Project: Our Origins</h2>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setLanguage('english')}
+              className={`px-6 py-2 rounded-full font-medium transition-all ${
+                language === 'english'
+                  ? 'bg-deepRed text-white shadow-lg'
+                  : 'bg-white text-earthBrown border-2 border-earthBrown/30 hover:border-deepRed/50'
+              }`}
+            >
+              English
+            </button>
+            <button
+              onClick={() => setLanguage('hebrew')}
+              className={`px-6 py-2 rounded-full font-medium transition-all ${
+                language === 'hebrew'
+                  ? 'bg-deepRed text-white shadow-lg'
+                  : 'bg-white text-earthBrown border-2 border-earthBrown/30 hover:border-deepRed/50'
+              }`}
+              style={{fontFamily: 'Frank Ruhl Libre, serif'}}
+            >
+              עברית
+            </button>
+          </div>
+        </div>
+        <article
+          className="space-y-6 text-earthBrown/90 text-lg leading-relaxed"
+          style={isHebrew ? {direction: 'rtl', fontFamily: 'Frank Ruhl Libre, serif'} : {}}
+        >
+          {currentParagraphs.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
         </article>
@@ -115,7 +175,8 @@ const AboutPage = () => (
 
     <Footer />
   </div>
-);
+  );
+};
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<AboutPage />);
