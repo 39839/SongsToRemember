@@ -326,21 +326,34 @@ const FOOTER_QUOTES = [
 
 const Footer = () => {
   const [currentQuote, setCurrentQuote] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentQuote((prev) => (prev + 1) % FOOTER_QUOTES.length);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentQuote((prev) => (prev + 1) % FOOTER_QUOTES.length);
+        setIsTransitioning(false);
+      }, 500);
     }, 8000);
 
     return () => clearInterval(interval);
   }, []);
 
   const nextQuote = () => {
-    setCurrentQuote((prev) => (prev + 1) % FOOTER_QUOTES.length);
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentQuote((prev) => (prev + 1) % FOOTER_QUOTES.length);
+      setIsTransitioning(false);
+    }, 500);
   };
 
   const prevQuote = () => {
-    setCurrentQuote((prev) => (prev - 1 + FOOTER_QUOTES.length) % FOOTER_QUOTES.length);
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentQuote((prev) => (prev - 1 + FOOTER_QUOTES.length) % FOOTER_QUOTES.length);
+      setIsTransitioning(false);
+    }, 500);
   };
 
   return (
@@ -386,7 +399,9 @@ const Footer = () => {
             {/* Quote Content */}
             <div className="px-8 md:px-12">
               {/* Hebrew Text */}
-              <div className="mb-6 text-center transition-opacity duration-1000">
+              <div className={`mb-6 text-center transition-all duration-500 ease-in-out min-h-[5rem] flex items-center justify-center ${
+                isTransitioning ? 'opacity-0 -translate-y-4' : 'opacity-100 translate-y-0'
+              }`}>
                 <p className="text-xl md:text-2xl font-serif text-lightBeige leading-relaxed"
                    style={{direction: 'rtl', fontFamily: 'Frank Ruhl Libre, serif', lineHeight: '1.8'}}>
                   {FOOTER_QUOTES[currentQuote].hebrew}
@@ -394,14 +409,18 @@ const Footer = () => {
               </div>
 
               {/* Small Divider */}
-              <div className="flex items-center justify-center my-6">
+              <div className={`flex items-center justify-center my-6 transition-all duration-500 ease-in-out ${
+                isTransitioning ? 'opacity-0' : 'opacity-100'
+              }`}>
                 <div className="w-16 h-px bg-gradient-to-r from-transparent via-sageGreen to-transparent"></div>
                 <div className="mx-3 w-1.5 h-1.5 rounded-full bg-sageGreen"></div>
                 <div className="w-16 h-px bg-gradient-to-r from-transparent via-sageGreen to-transparent"></div>
               </div>
 
               {/* English Translation */}
-              <div className="mb-4 text-center transition-opacity duration-1000">
+              <div className={`mb-4 text-center transition-all duration-500 ease-in-out min-h-[4.5rem] flex items-center justify-center ${
+                isTransitioning ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
+              }`}>
                 <p className="text-base md:text-lg italic text-lightBeige/90 leading-relaxed"
                    style={{fontFamily: 'Cardo, serif'}}>
                   {FOOTER_QUOTES[currentQuote].english}
@@ -409,7 +428,9 @@ const Footer = () => {
               </div>
 
               {/* Reference */}
-              <div className="text-center transition-opacity duration-1000">
+              <div className={`text-center transition-all duration-500 ease-in-out ${
+                isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
+              }`}>
                 <p className="text-sm text-sageGreen/90 font-medium tracking-wide">
                   — {FOOTER_QUOTES[currentQuote].reference} —
                 </p>
