@@ -4,6 +4,78 @@ const SITE_ROOT = (typeof window !== 'undefined' && window.__SITE_ROOT__) || './
 
 const resolvePath = (target) => `${SITE_ROOT}${target}`;
 
+const ShareButton = () => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipText, setTooltipText] = useState('Share');
+
+  const handleShare = async () => {
+    const shareData = {
+      title: document.title,
+      url: window.location.href
+    };
+
+    // Try to use Web Share API (works on mobile and some modern browsers)
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        setTooltipText('Shared!');
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          // Fallback to clipboard if share was cancelled
+          copyToClipboard();
+        }
+      }
+    } else {
+      // Fallback to clipboard
+      copyToClipboard();
+    }
+  };
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setTooltipText('Link copied!');
+      setTimeout(() => {
+        setTooltipText('Share');
+        setShowTooltip(false);
+      }, 2000);
+    } catch (err) {
+      setTooltipText('Unable to copy');
+      setTimeout(() => {
+        setTooltipText('Share');
+        setShowTooltip(false);
+      }, 2000);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={handleShare}
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => {
+          if (tooltipText === 'Share') setShowTooltip(false);
+        }}
+        className="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 hover:bg-gray-100"
+        aria-label="Share this page"
+        style={{color: '#2C2C2C'}}
+        onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#F2F0E4'}
+        onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+        </svg>
+      </button>
+      {showTooltip && (
+        <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg z-50">
+          {tooltipText}
+          <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45"></div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Navigation = ({ onNavigate }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -376,4 +448,4 @@ const Footer = () => {
   );
 };
 
-window.SharedComponents = { Navigation, Footer, MemorialCarousel };
+window.SharedComponents = { Navigation, Footer, MemorialCarousel, ShareButton };

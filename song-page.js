@@ -1,8 +1,8 @@
 const { useMemo } = React;
-const { Navigation, Footer } = window.SharedComponents || {};
+const { Navigation, Footer, ShareButton } = window.SharedComponents || {};
 const SITE_ROOT = (typeof window !== 'undefined' && window.__SITE_ROOT__) || './';
 
-if (!Navigation || !Footer) {
+if (!Navigation || !Footer || !ShareButton) {
   throw new Error('Shared components missing on song page.');
 }
 
@@ -90,21 +90,28 @@ const SongPage = () => {
               The Zikaron Project
             </span>
           </div>
-          <div className="space-y-4 text-earthBrown">
-            <p className="text-sm uppercase tracking-[0.3em] text-oliveGreen font-bold">
-              {song.artist}
-            </p>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-              {song.title}
-            </h1>
-            {song.titleHebrew && (
-              <p className="text-2xl text-deepRed/80 font-['Heebo']" dir="rtl">
-                {song.titleHebrew}
+          <div className="flex items-start justify-between gap-6">
+            <div className="space-y-4 text-earthBrown flex-1">
+              <p className="text-sm uppercase tracking-[0.3em] text-oliveGreen font-bold">
+                {song.artist}
               </p>
-            )}
-            <p className="text-base text-earthBrown/70 leading-relaxed">
-              {song.credits}
-            </p>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
+                {song.title}
+              </h1>
+              {song.titleHebrew && (
+                <p className="text-2xl text-deepRed/80 font-['Heebo']" dir="rtl">
+                  {song.titleHebrew}
+                </p>
+              )}
+              <p className="text-base text-earthBrown/70 leading-relaxed">
+                {song.credits}
+              </p>
+            </div>
+            <div className="flex-shrink-0 pt-2">
+              <div className="bg-white/80 backdrop-blur border-2 border-sageGreen/40 rounded-full p-2 shadow-lg">
+                <ShareButton />
+              </div>
+            </div>
           </div>
         </div>
       </header>
