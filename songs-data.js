@@ -668,6 +668,53 @@ const songs = [
       { he: "לא אישה לא כדור מחבלים", tr: "Lo isha lo kadur mechablim", en: "Not a woman, not a bullet from terrorists" },
       { he: "שום דבר", tr: "Shum davar", en: "Nothing" }
     ]
+  },
+  {
+    id: 14,
+    title: "Beautiful Things to See",
+    titleHebrew: "דברים יפים לראות",
+    artist: "Idan Amedi",
+    videoUrl: "-b0ZgBerrEM",
+    credits: "Written and composed by Idan Amedi. Translated (and adapted) by Naama Ben-Dor.",
+    context: "Capt. Alon Scagio, 22, from Hadera, was a sniper team commander in the Haruv Reconnaissance Unit in the Kfir Brigade. On June 27, 2024, during an operation to locate terrorists and weapons, he and his team were ambushed by terrorists. After running under fire three times to help evacuate and rescue injured medical soldiers from a vehicle targeted by a roadside bomb, terrorists struck Alon with a second bomb, killing him.\n\nBefore the operation, Alon wrote letters to his loved ones, in case he doesn't return. In them, he made a request that they play the song \"Beautiful Things to See\" by Idan Amedi at his funeral. His parents shared that they only received the letters during Shiva, after his funeral had occurred, but that a few days later Idan Amedi showed up to their home to play the song for Alon's family. \"I sang many songs at funerals,\" Amedi later shared, \"but I've never been asked to sing such an optimistic song.\"\n\nAlthough not traditionally associated with Israeli Remembrance Day, this song, and Alon's request for his loved ones to remember its message, embodies the Hebrew saying that often concludes remembrance ceremonies: \"במותם ציוו לנו את החיים\" - \"With their death, they commanded us to live.\"\n\nלזכרו של אלון סקאג'יו",
+    lyrics: [
+      { he: "הנה התיישבתי למולך בתוך החדר הגדול.", tr: "Hineh hityashavti lemulech betoch hacheder hagadol.", en: "I sat here right in front of you, inside the large room." },
+      { he: "דווקא כאן מאיר הכול. בחוץ יש אוהלים.", tr: "Davka kan ma'ir hakol. Bachutz yesh ohalim.", en: "Strange how here, specifically, everything is bright. There are tents outside." },
+      { he: "הנה התיישבתי למולך, מתלבט אם לשאול,", tr: "Hineh hityashavti lemulech, mitlabet im lish'ol,", en: "I sat here right in front of you, debating whether or not to ask," },
+      { he: "\"למה את שקטה פתאום?\" בחוץ נופלים טילים.", tr: "\"Lama at shketah pit'om?\" Bachutz noflim tilim.", en: "\"Why have you suddenly gone quiet?\" Missiles are falling outside." },
+      { he: "", tr: "", en: "" },
+      { he: "\"אהובי, תפסיק לראות את הסוף.\"", tr: "\"Ahuvi, tafsik lir'ot et hasof.\"", en: "\"My love, stop fixating on the end.\"" },
+      { he: "\"אהובי, זה כנראה מה שהיה צריך להיות.\"", tr: "\"Ahuvi, ze kanir'e ma shehaya tzarich lihyot.\"", en: "\"My love, it looks like this was just how things were meant to be.\"" },
+      { he: "כך את אומרת,", tr: "Kach at omeret,", en: "That's what you say." },
+      { he: "\"בוא נמשיך לחיות, יש עוד דברים יפים לראות.\"", tr: "\"Bo namshich lachyot, yesh od dvarim yafim lir'ot.\"", en: "\"Let's just keep on living life. There are more beautiful things to see.\"" },
+      { he: "", tr: "", en: "" },
+      { he: "הנה התיישבתי לידך, מולנו חדשות.", tr: "Hineh hityashavti lidech, mulenu chadashot.", en: "I sat here right beside you, the news playing across from us." },
+      { he: "מסכנה יונית הזאת. כולם שונאים שליחים.", tr: "Miskena Yonit hazot. Kulam son'im shlichim.", en: "That poor Yonit. Everyone hates the messenger." },
+      { he: "הנה התיישבתי לידך, מולנו אבדות.", tr: "Hineh hityashavti lidech, mulenu avedot.", en: "I sat here right beside you, in front of us the casualties are shown." },
+      { he: "ואני זועק קללות. יש גם שנאת תמימים.", tr: "Va'ani zo'ek klalot. Yesh gam sin'at tmimim.", en: "And I swear out loud. There is hatred of innocents, too." },
+      { he: "", tr: "", en: "" },
+      { he: "\"אהובי, תפסיק לראות את הסוף.\"", tr: "\"Ahuvi, tafsik lir'ot et hasof.\"", en: "\"My love, stop fixating on the end.\"" },
+      { he: "\"אהובי, זה כנראה מה שהיה צריך להיות.\"", tr: "\"Ahuvi, ze kanir'e ma shehaya tzarich lihyot.\"", en: "\"My love, it looks like this was just how things were meant to be.\"" },
+      { he: "כך את אומרת,", tr: "Kach at omeret,", en: "That's what you say." },
+      { he: "\"בוא נמשיך לחיות, יש עוד דברים יפים לראות.\"", tr: "\"Bo namshich lachyot, yesh od dvarim yafim lir'ot.\"", en: "\"Let's just keep on living life. There are more beautiful things to see.\"" },
+      { he: "", tr: "", en: "" },
+      { he: "הנה כבר נשכבנו עייפים, עלייך יש חיוך גדול.", tr: "Hineh kvar nishkavnu ayefim, alayich yesh chiyuch gadol.", en: "We've laid down here, tired. You have a big smile on your face." },
+      { he: "ואת אומרת משהו עמוק; עתיד וילדים.", tr: "Ve'at omeret mashehu amok; atid veyeladim.", en: "And you say something deep; future and children." },
+      { he: "הנה כבר נשכבנו עייפים, שומר לי על הזכות לשתוק.", tr: "Hineh kvar nishkavnu ayefim, shomer li al hazchut lishtok.", en: "We've laid down here, tired. I reserve my right to remain silent." },
+      { he: "ככה זה יוצא לי טוב. ככה אין שקרים.", tr: "Kacha ze yotze li tov. Kacha ein shkarim.", en: "That's what works best for me. That way there are no lies." },
+      { he: "", tr: "", en: "" },
+      { he: "\"אהובי, תפסיק לראות את הסוף.\"", tr: "\"Ahuvi, tafsik lir'ot et hasof.\"", en: "\"My love, stop fixating on the end.\"" },
+      { he: "\"אהובי, זה כנראה מה שהיה צריך להיות.\"", tr: "\"Ahuvi, ze kanir'e ma shehaya tzarich lihyot.\"", en: "\"My love, it looks like this was just how things were meant to be.\"" },
+      { he: "כך את אומרת.", tr: "Kach at omeret.", en: "That's what you say." },
+      { he: "", tr: "", en: "" },
+      { he: "\"אהובי, תפסיק לראות את הסוף.\"", tr: "\"Ahuvi, tafsik lir'ot et hasof.\"", en: "\"My love, stop fixating on the end.\"" },
+      { he: "\"אהובי, זה כנראה מה שהיה צריך להיות.\"", tr: "\"Ahuvi, ze kanir'e ma shehaya tzarich lihyot.\"", en: "\"My love, it looks like this was just how things were meant to be.\"" },
+      { he: "כך את אומרת.", tr: "Kach at omeret.", en: "That's what you say." },
+      { he: "", tr: "", en: "" },
+      { he: "\"בוא נמשיך לחיות, יש–", tr: "\"Bo namshich lachyot, yesh–", en: "\"Let's just keep on living life. There are–" },
+      { he: "יש עוד דברים יפים לראות.\"", tr: "Yesh od dvarim yafim lir'ot.\"", en: "There are more beautiful things to see.\"" },
+      { he: "\"יש עוד דברים יפים לראות.\"", tr: "\"Yesh od dvarim yafim lir'ot.\"", en: "There are more beautiful things to see.\"" }
+    ]
   }
 ];
 
