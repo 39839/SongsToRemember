@@ -715,6 +715,53 @@ const songs = [
       { he: "לא אישה לא כדור מחבלים", tr: "Lo isha lo kadur mechablim", en: "Not a woman, not a bullet from terrorists" },
       { he: "שום דבר", tr: "Shum davar", en: "Nothing" }
     ]
+  },
+  {
+    id: 15,
+    title: "The Sand Will Remember",
+    titleHebrew: "החול יזכור",
+    artist: "Chava Alberstein",
+    videoUrl: "xACLuoX6un0",
+    credits: "Written by Natan Yonatan, Composed by Nachum Heiman, Performed by Chava Alberstein, Translated by Naama Ben-Dor.",
+    context: "This video is part of my project to share English translations of Hebrew remembrance songs with the global community, in an effort to connect Jews throughout the diaspora in their shared pain and experiences. Written by Natan Yonatan and composed by Nachum Heiman, \"The Sand Will Remember\" reflects on the traces that loss leaves behind: even when the waves recede and youth ends too soon, memory does not disappear.",
+    lyrics: [
+      { he: "החול יזכור את הגלים", tr: "Hachol yizkor et hagalim", en: "The sand will remember the waves," },
+      { he: "אבל לקצף אין זוכר.", tr: "Aval laketzef ein zocher.", en: "But none will remember the foam." },
+      { he: "זולת ההם אשר עברו-", tr: "Zulat hahem asher avru-", en: "Except for those who passed by-" },
+      { he: "עם רוח לילה מאחר.", tr: "Im ruach laila me'acher.", en: "With the winds of late nighttime." },
+      { he: "מזכרונם הוא לעולם לא ימחה.", tr: "Mizichronam hu le'olam lo yimacheh.", en: "From their memories, it shall never fade." },
+      { he: "", tr: "", en: "" },
+      { he: "הכל ישוב אל המצולות-", tr: "Hakol yashuv el hametzulot-", en: "Everything will return to the depths-" },
+      { he: "זולת הקצף הלבן.", tr: "Zulat haketzef halavan.", en: "Except for the white foam." },
+      { he: "נרות הלילה דעכו.", tr: "Nerot halayla da'achu.", en: "The evening primroses have wilted." },
+      { he: "הידידות האהבה", tr: "Hayedidut ha'ahavah", en: "The friendship, the love." },
+      { he: "הנעורים שבאו פתע אל סופם.", tr: "Hane'urim sheba'u peta el sofam.", en: "The youth who abruptly met their end." },
+      { he: "הנעורים שבאו פתע אל סופם.", tr: "Hane'urim sheba'u peta el sofam.", en: "The youth who abruptly met their end." },
+      { he: "", tr: "", en: "" },
+      { he: "כמוהו גם, על חוף ליבם רטט אז משהו חיוור", tr: "Kemohu gam, al chof libam ratat az mashehu chiver", en: "Just like it, upon the shore of their hearts, something pale trembled then," },
+      { he: "והם רשמו בתוך החול, כשהירח העובר.", tr: "Vehem rashmu betoch hachol, kshehayare'ach ha'over.", en: "And they etched into the sand, as the moon passed above." },
+      { he: "האיר פתאום פנים זרות ושחוק רפה.", tr: "He'ir pit'om panim zarot uschok rafeh.", en: "It suddenly lit strange faces and" },
+      { he: "ושחוק רפה.", tr: "Uschok rafeh.", en: "a faint laughter." },
+      { he: "", tr: "", en: "" },
+      { he: "הכל ישוב אל המצולות-", tr: "Hakol yashuv el hametzulot-", en: "Everything will return to the depths-" },
+      { he: "זולת הקצף הלבן.", tr: "Zulat haketzef halavan.", en: "Except for the white foam." },
+      { he: "נרות הלילה דעכו.", tr: "Nerot halayla da'achu.", en: "The evening primroses have wilted." },
+      { he: "הידידות האהבה", tr: "Hayedidut ha'ahavah", en: "The friendship, the love." },
+      { he: "הנעורים שבאו פתע אל סופם", tr: "Hane'urim sheba'u peta el sofam", en: "The youth who abruptly met their end." },
+      { he: "הנעורים שבאו פתע אל סופם.", tr: "Hane'urim sheba'u peta el sofam.", en: "The youth who abruptly met their end." },
+      { he: "", tr: "", en: "" },
+      { he: "היו שם קונכיות ריקות,", tr: "Hayu sham konchiyot reikot,", en: "There were empty shells there," },
+      { he: "שנהמו קינה של ים.", tr: "Shenahamu kinah shel yam.", en: "That groaned the lamentations of the sea." },
+      { he: "ובית עלמין, על הגבעות,", tr: "Uveit almin, al hagva'ot,", en: "And the cemetery, on the hills," },
+      { he: "ושניים שחלפו דומם.", tr: "Ushnayim shechalfu dumam.", en: "And two who passed in silence." },
+      { he: "בין החצב והקברים והשיקמה.", tr: "Bein hachatzav vehakvarim vehashikmah.", en: "Between the squill flowers, the graves, and the sycamore." },
+      { he: "והשיקמה.", tr: "Vehashikmah.", en: "And the sycamore." },
+      { he: "", tr: "", en: "" },
+      { he: "הכל ישוב אל המצולות זולת הקצף הלבן.", tr: "Hakol yashuv el hametzulot zulat haketzef halavan.", en: "Everything will return to the depths except for the white foam." },
+      { he: "נרות הלילה דעכו. הידידות האהבה", tr: "Nerot halayla da'achu. Hayedidut ha'ahavah", en: "The evening primroses have wilted. The friendship, the love." },
+      { he: "הנעורים שבאו פתע אל סופם", tr: "Hane'urim sheba'u peta el sofam", en: "The youth who abruptly met their end." },
+      { he: "הנעורים שבאו פתע אל סופם.", tr: "Hane'urim sheba'u peta el sofam.", en: "The youth who abruptly met their end." }
+    ]
   }
 ];
 
