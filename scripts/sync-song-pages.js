@@ -1,8 +1,11 @@
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
+const { execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const SITE_URL = 'https://thezikaronproject.com';
+const SOCIAL_PREVIEWS_DIR = path.join(ROOT, 'social-previews');
 
 global.window = {};
 require(path.join(ROOT, 'songs-data.js'));
@@ -26,14 +29,82 @@ const escapeHtml = (value) =>
 const buildDescription = (song) =>
   `Hebrew, transliteration, and English lyrics for "${song.title}" by ${song.artist} on The Zikaron Project.`;
 
+const ensureDir = (dirPath) => {
+  fs.mkdirSync(dirPath, { recursive: true });
+};
+
+const downloadThumbnail = (videoId, outputPath) => {
+  const variants = [
+    'maxresdefault.jpg',
+    'sddefault.jpg',
+    'hqdefault.jpg',
+    'mqdefault.jpg',
+    'default.jpg',
+  ];
+
+  for (const variant of variants) {
+    const url = `https://i.ytimg.com/vi/${videoId}/${variant}`;
+
+    try {
+      execFileSync('curl', ['-L', '--fail', '-sS', url, '-o', outputPath], {
+        stdio: 'ignore',
+      });
+      return true;
+    } catch (error) {
+      // Try the next available thumbnail size.
+    }
+  }
+
+  return false;
+};
+
+const createSocialPreview = (inputPath, outputPath) => {
+  execFileSync(
+    'ffmpeg',
+    [
+      '-y',
+      '-loglevel',
+      'error',
+      '-i',
+      inputPath,
+      '-vf',
+      'scale=1200:630:force_original_aspect_ratio=increase,crop=1200:630',
+      '-q:v',
+      '2',
+      outputPath,
+    ],
+    { stdio: 'ignore' }
+  );
+};
+
+const getSocialPreviewUrl = (song, slug) => {
+  const outputPath = path.join(SOCIAL_PREVIEWS_DIR, `${slug}.jpg`);
+  const tempPath = path.join(
+    os.tmpdir(),
+    `zikaron-${slug}-${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`
+  );
+
+  try {
+    if (!song.videoUrl || !downloadThumbnail(song.videoUrl, tempPath)) {
+      createSocialPreview(path.join(ROOT, 'Logo.png'), outputPath);
+    } else {
+      createSocialPreview(tempPath, outputPath);
+    }
+  } finally {
+    if (fs.existsSync(tempPath)) {
+      fs.unlinkSync(tempPath);
+    }
+  }
+
+  return `${SITE_URL}/social-previews/${slug}.jpg`;
+};
+
 const buildSongPage = (song) => {
   const slug = slugify(song.title);
   const title = `${song.title} | Zikaron Project`;
   const description = buildDescription(song);
   const pageUrl = `${SITE_URL}/songs/${slug}/`;
-  const imageUrl = song.videoUrl
-    ? `https://i.ytimg.com/vi/${song.videoUrl}/hqdefault.jpg`
-    : `${SITE_URL}/Logo.png`;
+  const imageUrl = getSocialPreviewUrl(song, slug);
 
   return `<!doctype html>
 <html lang="en">
@@ -54,11 +125,15 @@ const buildSongPage = (song) => {
   <meta property="og:description" content="${escapeHtml(description)}">
   <meta property="og:url" content="${escapeHtml(pageUrl)}">
   <meta property="og:image" content="${escapeHtml(imageUrl)}">
+  <meta property="og:image:secure_url" content="${escapeHtml(imageUrl)}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="${escapeHtml(song.title)} video thumbnail">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${escapeHtml(title)}">
   <meta name="twitter:description" content="${escapeHtml(description)}">
   <meta name="twitter:image" content="${escapeHtml(imageUrl)}">
+  <meta name="twitter:image:alt" content="${escapeHtml(song.title)} video thumbnail">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     window.__SITE_ROOT__ = "../../";
@@ -92,6 +167,8 @@ const buildSongPage = (song) => {
 </html>
 `;
 };
+
+ensureDir(SOCIAL_PREVIEWS_DIR);
 
 for (const song of songs) {
   const slug = slugify(song.title);
