@@ -383,13 +383,22 @@ const Footer = () => {
 
 /* --------------------------------------------------------------------------
    Ambient looping video (Higgsfield-generated) over a still poster.
-   The video stays invisible until it is actually playing, so browsers that
-   block autoplay (e.g. iOS Low Power Mode) simply show the still image and
-   never a native play button.
+
+   Safari and every iOS browser get the MP4 inside an <img>, which WebKit plays
+   like an animated GIF: it always loops, ignores autoplay rules and Low Power
+   Mode, and can never show a play button. Other browsers use a muted <video>.
    -------------------------------------------------------------------------- */
 
 const saveData = () =>
   typeof navigator !== 'undefined' && navigator.connection && navigator.connection.saveData;
+
+const isAppleWebKit = (() => {
+  if (typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent;
+  const iOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const safari = /^((?!chrome|chromium|crios|fxios|edg|opr|android).)*safari/i.test(ua);
+  return iOS || safari;
+})();
 
 const AmbientVideo = ({ name, alt, playing = true, lazy = false, priority = false, onLive }) => {
   const videoRef = useRef(null);
@@ -399,19 +408,12 @@ const AmbientVideo = ({ name, alt, playing = true, lazy = false, priority = fals
   const stillOnly = prefersReducedMotion() || saveData();
   const small = typeof window !== 'undefined' && window.innerWidth < 900;
   const src = resolvePath(`assets/${name}${small ? '-sm' : ''}.mp4`);
+  const poster = resolvePath(`assets/${name}.webp`);
 
-  // Safari decides whether a video may autoplay when it starts loading, and React
-  // never writes the `muted` attribute. So mark it muted/inline first, then set src.
-  const attachVideo = (node) => {
-    videoRef.current = node;
-    if (node && !node.dataset.src) {
-      node.muted = true;
-      node.defaultMuted = true;
-      node.setAttribute('muted', '');
-      node.setAttribute('playsinline', '');
-      node.setAttribute('webkit-playsinline', '');
-      node.dataset.src = src;
-      node.src = src;
+  const markLive = () => {
+    if (!live) {
+      setLive(true);
+      if (onLive) onLive();
     }
   };
 
@@ -420,6 +422,20 @@ const AmbientVideo = ({ name, alt, playing = true, lazy = false, priority = fals
     if (!video || !playing || !inView) return;
     const attempt = video.play();
     if (attempt && attempt.catch) attempt.catch(() => {});
+  };
+
+  // React never writes the `muted` attribute, and browsers decide on autoplay when
+  // loading starts, so mark the video muted/inline first and only then set its source.
+  const attachVideo = (node) => {
+    videoRef.current = node;
+    if (node && !node.dataset.src) {
+      node.muted = true;
+      node.defaultMuted = true;
+      node.setAttribute('muted', '');
+      node.setAttribute('playsinline', '');
+      node.dataset.src = src;
+      node.src = src;
+    }
   };
 
   useEffect(() => {
@@ -436,32 +452,27 @@ const AmbientVideo = ({ name, alt, playing = true, lazy = false, priority = fals
     else video.pause();
   }, [playing, inView]);
 
-  // If the browser blocked autoplay (e.g. iOS Low Power Mode), start on the first tap.
-  useEffect(() => {
-    if (live || stillOnly) return undefined;
-    const events = ['touchstart', 'pointerdown', 'keydown'];
-    const onFirstInteraction = () => tryPlay();
-    events.forEach((e) => window.addEventListener(e, onFirstInteraction, { once: true, passive: true }));
-    return () => events.forEach((e) => window.removeEventListener(e, onFirstInteraction));
-  }, [live, playing, inView]);
-
-  const handlePlaying = () => {
-    if (!live) {
-      setLive(true);
-      if (onLive) onLive();
-    }
-  };
+  const showMotion = !stillOnly && (inView || live);
 
   return (
     <div ref={wrapRef} style={{ position: 'absolute', inset: 0 }}>
       <img
-        src={resolvePath(`assets/${name}.webp`)}
+        src={poster}
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
         fetchpriority={priority ? 'high' : undefined}
         decoding="async"
       />
-      {!stillOnly && (inView || live) && (
+      {showMotion && isAppleWebKit && (
+        <img
+          className={`ambient-motion ${live ? 'is-ready' : ''}`}
+          src={playing ? src : poster}
+          alt=""
+          aria-hidden="true"
+          onLoad={markLive}
+        />
+      )}
+      {showMotion && !isAppleWebKit && (
         <video
           ref={attachVideo}
           className={live ? 'is-ready' : ''}
@@ -470,13 +481,13 @@ const AmbientVideo = ({ name, alt, playing = true, lazy = false, priority = fals
           playsInline
           autoPlay
           preload="auto"
-          controls={false}
+          poster={poster}
           disablePictureInPicture
           disableRemotePlayback
           tabIndex={-1}
           aria-hidden="true"
           onCanPlay={tryPlay}
-          onPlaying={handlePlaying}
+          onPlaying={markLive}
         />
       )}
     </div>
