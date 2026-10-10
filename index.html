@@ -3,12 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <title>The Zikaron Project</title>
+  <meta name="theme-color" content="#15110e">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <meta property="og:title" content="The Zikaron Project — Songs of Remembrance">
+  <meta property="og:description" content="Hebrew remembrance songs, translated into English, so the world can hear Israel's story of memory and loss in its own words.">
+  <meta property="og:image" content="https://thezikaronproject.com/assets/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta http-equiv="refresh" content="0; url=./home/">
   <script>
     // Immediately redirect to /home without showing a flash
-    window.location.replace('./home/');
+    window.location.replace('./home/' + window.location.hash);
   </script>
+  <style>html,body{margin:0;background:#15110e}</style>
 </head>
 <body>
-  <!-- This content won't be visible due to immediate redirect -->
+  <a href="./home/" style="color:#f1e9dc">Continue to The Zikaron Project</a>
 </body>
 </html>

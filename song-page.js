@@ -1,32 +1,260 @@
-const { useMemo } = React;
-const { Navigation, Footer, ShareButton } = window.SharedComponents || {};
-const SITE_ROOT = (typeof window !== 'undefined' && window.__SITE_ROOT__) || './';
+const { useMemo, useState, useEffect } = React;
+const { PageShell, ShareButton, Icon } = window.SharedComponents || {};
+const {
+  resolvePath,
+  slugify,
+  getYouTubeId,
+  thumbnailFor,
+  handleThumbError,
+  handleThumbLoad,
+  songUrl,
+  useReveal,
+} = window.Zikaron || {};
 
-if (!Navigation || !Footer || !ShareButton) {
+if (!PageShell || !ShareButton) {
   throw new Error('Shared components missing on song page.');
 }
 
 const songsData = window.songs || [];
-
-const slugify = (text) =>
-  text
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
-
-const getYouTubeId = (url) => {
-  if (!url) return '';
-  const match = url.match(/(?:youtu\.be\/|v=|\/embed\/|\/watch\?v=|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/);
-  return match ? match[1] : url;
-};
 
 const extractSlugFromPath = () => {
   // Extract slug from /songs/[slug]/ or /songs/[slug]/index.html
   const match = window.location.pathname.match(/\/songs\/([a-z0-9-]+)\/?(?:index\.html)?$/i);
   return match ? match[1].toLowerCase() : null;
 };
+
+const pad = (n) => String(n).padStart(2, '0');
+
+// Lines with no text mark a stanza break.
+const toStanzas = (lyrics = []) =>
+  lyrics.reduce(
+    (stanzas, line) => {
+      const empty = !line.he && !line.en && !line.tr;
+      if (empty) {
+        if (stanzas[stanzas.length - 1].length) stanzas.push([]);
+      } else {
+        stanzas[stanzas.length - 1].push(line);
+      }
+      return stanzas;
+    },
+    [[]]
+  ).filter((stanza) => stanza.length);
+
+const URL_PATTERN = /(https?:\/\/[^\s)]+)/g;
+
+const Linkified = ({ text }) =>
+  text.split(URL_PATTERN).map((part, i) =>
+    /^https?:\/\//.test(part) ? (
+      <a key={i} href={part} target="_blank" rel="noopener noreferrer">{part.replace(/^https?:\/\//, '')}</a>
+    ) : (
+      <React.Fragment key={i}>{part}</React.Fragment>
+    )
+  );
+
+const readPref = (key, fallback) => {
+  try {
+    const value = window.localStorage.getItem(key);
+    return value === null ? fallback : JSON.parse(value);
+  } catch (err) {
+    return fallback;
+  }
+};
+
+const writePref = (key, value) => {
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch (err) {
+    /* storage unavailable — preference simply isn't remembered */
+  }
+};
+
+/* --------------------------------------------------------------------------
+   Pieces
+   -------------------------------------------------------------------------- */
+
+const Player = ({ song }) => {
+  const [playing, setPlaying] = useState(false);
+  const videoId = getYouTubeId(song.videoUrl);
+  if (!videoId) return null;
+
+  return (
+    <div className="container player">
+      <div className="player__frame reveal">
+        {playing ? (
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`}
+            title={`${song.title} — lyric video`}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        ) : (
+          <button type="button" className="player__poster" onClick={() => setPlaying(true)} aria-label={`Play the lyric video for ${song.title}`}>
+            <img src={thumbnailFor(song)} alt="" onError={handleThumbError} onLoad={handleThumbLoad} />
+            <span className="player__play">
+              <span><Icon.Play /></span>
+              <span>Watch the lyric video</span>
+            </span>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const Story = ({ song }) => {
+  const paragraphs = (song.context || '').split(/\n+/).map((p) => p.trim()).filter(Boolean);
+  if (!paragraphs.length) return null;
+
+  return (
+    <section className="section" aria-labelledby="story-title">
+      <div className="container story">
+        <div className="story__aside reveal">
+          <h2 id="story-title" className="h-section">
+            Context &amp; <em>Story</em>
+          </h2>
+        </div>
+        <div className="story__body prose dropcap reveal" style={{ '--i': 1 }}>
+          {paragraphs.map((p, i) => (
+            <p key={i} dir="auto"><Linkified text={p} /></p>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const Lyrics = ({ song }) => {
+  const [mode, setMode] = useState(() => readPref('zikaron:lyrics-mode', 'parallel'));
+  const [showTr, setShowTr] = useState(() => readPref('zikaron:show-tr', true));
+  const stanzas = useMemo(() => toStanzas(song.lyrics), [song]);
+  const hasTr = (song.lyrics || []).some((l) => l.tr);
+
+  useEffect(() => writePref('zikaron:lyrics-mode', mode), [mode]);
+  useEffect(() => writePref('zikaron:show-tr', showTr), [showTr]);
+  useReveal([mode, showTr]);
+
+  if (!stanzas.length) return null;
+
+  const showHe = mode !== 'english';
+  const showEn = mode !== 'hebrew';
+  const layout = mode === 'parallel' ? 'lyrics--parallel' : `lyrics--single lyrics--${mode}`;
+
+  const modes = [
+    { key: 'parallel', label: 'Side by side' },
+    { key: 'english', label: 'English' },
+    { key: 'hebrew', label: 'עברית', hebrew: true },
+  ];
+
+  return (
+    <section className="section lyrics-section" aria-labelledby="lyrics-title">
+      <div className="container">
+        <div className="lyrics-head reveal">
+          <div>
+            <h2 id="lyrics-title" className="h-section">
+              Lyrics
+            </h2>
+          </div>
+          <div className="controls">
+            <div className="segmented" role="group" aria-label="Lyrics language">
+              {modes.map((m) => (
+                <button
+                  key={m.key}
+                  type="button"
+                  aria-pressed={mode === m.key}
+                  onClick={() => setMode(m.key)}
+                  className={m.hebrew ? 'hebrew-label' : ''}
+                  lang={m.hebrew ? 'he' : undefined}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+            {hasTr && (
+              <label className="switch">
+                <input type="checkbox" checked={showTr} onChange={(e) => setShowTr(e.target.checked)} />
+                <span className="switch__track" aria-hidden="true"></span>
+                Transliteration
+              </label>
+            )}
+          </div>
+        </div>
+
+        <div className={`stanzas ${layout}`}>
+          {stanzas.map((stanza, si) => (
+            <div key={`${mode}-${si}`} className="stanza reveal">
+              <span className="stanza__num" aria-hidden="true">{pad(si + 1)}</span>
+              {stanza.map((line, li) => (
+                <div key={li} className="line">
+                  {showHe && line.he && <p className="line__he" lang="he">{line.he}</p>}
+                  {showTr && line.tr && <p className="line__tr">{line.tr}</p>}
+                  {showEn && line.en && <p className="line__en">{line.en}</p>}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        <div className="lyrics-end reveal">
+          <img src={resolvePath('assets/flower-sm.png')} alt="" />
+          <p>May their memory be a blessing</p>
+          <p className="hebrew" lang="he">יהי זכרם ברוך</p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const Pager = ({ song }) => {
+  const index = songsData.indexOf(song);
+  if (index < 0 || songsData.length < 2) return null;
+  const prev = songsData[(index - 1 + songsData.length) % songsData.length];
+  const next = songsData[(index + 1) % songsData.length];
+
+  const Item = ({ target, label }) => (
+    <a href={songUrl(target)}>
+      <span className="pager__bg" aria-hidden="true">
+        <img src={thumbnailFor(target, 'mqdefault')} alt="" loading="lazy" />
+      </span>
+      <span className="pager__label">{label}</span>
+      <p className="pager__title">{target.title}</p>
+      {target.titleHebrew && <p className="hebrew pager__hebrew" lang="he">{target.titleHebrew}</p>}
+    </a>
+  );
+
+  return (
+    <nav className="pager" aria-label="More songs">
+      <Item target={prev} label="← Previous song" />
+      <Item target={next} label="Next song →" />
+    </nav>
+  );
+};
+
+/* --------------------------------------------------------------------------
+   Page
+   -------------------------------------------------------------------------- */
+
+const NotFound = () => (
+  <PageShell current="songs">
+    <header className="page-hero on-ink">
+      <div className="page-hero__media">
+        <img src={resolvePath('assets/candle.webp')} alt="" />
+      </div>
+      <div className="page-hero__veil" aria-hidden="true"></div>
+      <div className="container page-hero__content">
+        <p className="eyebrow rise">Not found</p>
+        <h1 className="display page-hero__title rise" style={{ '--i': 1 }}>
+          We couldn’t find <em>that song</em>.
+        </h1>
+        <div className="hero__actions rise" style={{ '--i': 2 }}>
+          <a href={resolvePath('home/#songs')} className="btn btn--primary">
+            Back to the collection
+            <Icon.ArrowRight />
+          </a>
+        </div>
+      </div>
+    </header>
+  </PageShell>
+);
 
 const SongPage = () => {
   const searchParams = new URLSearchParams(window.location.search);
@@ -43,139 +271,47 @@ const SongPage = () => {
     return null;
   }, [slugFromPath, songIdParam]);
 
-  if (!song) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#faf9f5] via-[#f5f3eb] to-[#ebe8dc]">
-        <Navigation />
-        <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
-          <p className="text-2xl text-earthBrown mb-6">We couldn’t find that song.</p>
-          <a
-            href={`${SITE_ROOT}home/#songs`}
-            className="inline-flex items-center gap-3 px-6 py-3 bg-deepRed text-white rounded-full font-semibold shadow-lg hover:shadow-deepRed/40 transition-transform hover:-translate-y-1"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to the collection
-          </a>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (song) document.title = `${song.title} (${song.titleHebrew}) — The Zikaron Project`;
+  }, [song]);
 
-  const videoId = getYouTubeId(song.videoUrl);
-  const embedUrl = videoId ? `https://www.youtube.com/embed/${videoId}?rel=0` : '';
+  useReveal([song]);
+
+  if (!song) return <NotFound />;
+
+  const number = songsData.indexOf(song) + 1;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#faf9f5] via-[#f5f3eb] to-[#ebe8dc]">
-      <Navigation />
-      <header className="relative overflow-hidden bg-gradient-to-br from-[#faf9f5] via-[#f5f3eb] to-[#ebe8dc] py-16">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-6 left-10 w-56 h-56 bg-deepRed/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-6 right-10 w-64 h-64 bg-oliveGreen/15 rounded-full blur-3xl"></div>
+    <PageShell current="songs">
+      <header className="page-hero on-ink">
+        <div className="song-hero__media" aria-hidden="true">
+          <img src={thumbnailFor(song, 'mqdefault')} alt="" />
         </div>
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          <div className="flex items-center gap-4 flex-wrap">
-            <a
-              href={`${SITE_ROOT}home/#songs`}
-              className="inline-flex items-center gap-3 px-5 py-3 bg-white/80 backdrop-blur border border-sageGreen/40 rounded-full text-earthBrown font-semibold shadow-lg hover:-translate-x-1 transition-transform"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-              </svg>
+        <div className="song-hero__veil" aria-hidden="true"></div>
+        <div className="container song-hero__content">
+          <div className="song-hero__top rise">
+            <a href={resolvePath('home/#songs')} className="back-link">
+              <Icon.ArrowLeft />
               Back to collection
             </a>
-            <span className="text-sm uppercase tracking-[0.35em] text-oliveGreen font-bold">
-              The Zikaron Project
-            </span>
+            <ShareButton />
           </div>
-          <div className="flex items-start justify-between gap-6">
-            <div className="space-y-4 text-earthBrown flex-1">
-              <p className="text-sm uppercase tracking-[0.3em] text-oliveGreen font-bold">
-                {song.artist}
-              </p>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-                {song.title}
-              </h1>
-              {song.titleHebrew && (
-                <p className="text-2xl text-deepRed/80 font-['Heebo']" dir="rtl">
-                  {song.titleHebrew}
-                </p>
-              )}
-              <p className="text-base text-earthBrown/70 leading-relaxed">
-                {song.credits}
-              </p>
-            </div>
-            <div className="flex-shrink-0 pt-2">
-              <div className="bg-white/80 backdrop-blur border-2 border-sageGreen/40 rounded-full p-2 shadow-lg">
-                <ShareButton />
-              </div>
-            </div>
-          </div>
+          <p className="eyebrow rise" style={{ '--i': 1 }}>
+            No. {pad(number)} · {song.artist}
+          </p>
+          <h1 className="display song-hero__title rise" style={{ '--i': 2 }}>{song.title}</h1>
+          {song.titleHebrew && (
+            <p className="hebrew song-hero__hebrew rise" lang="he" style={{ '--i': 3 }}>{song.titleHebrew}</p>
+          )}
+          {song.credits && <p className="song-hero__credits rise" style={{ '--i': 4 }}>{song.credits}</p>}
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
-        <div className="rounded-3xl overflow-hidden shadow-2xl border-2 border-sageGreen/30 bg-white/90">
-          <div className="video-wrapper">
-            <iframe
-              src={embedUrl}
-              title={song.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-br from-sageGreen/20 via-oliveGreen/10 to-transparent border-l-4 border-deepRed rounded-3xl p-8 shadow-xl">
-          <h2 className="text-2xl sm:text-3xl font-bold text-earthBrown mb-4 flex items-center gap-3">
-            <svg className="w-7 h-7 text-deepRed" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-            </svg>
-            Context & Story
-          </h2>
-          <p className="whitespace-pre-line text-lg leading-relaxed text-earthBrown/90">
-            {song.context}
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 border-b-2 border-oliveGreen/40 pb-4">
-            <svg className="w-6 h-6 text-deepRed" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z" />
-            </svg>
-            <h3 className="text-xl font-bold text-earthBrown">Lyrics</h3>
-          </div>
-          <div className="bg-white border-2 border-sageGreen/30 rounded-3xl p-7 shadow-lg space-y-6">
-            {song.lyrics && song.lyrics.map((line, index) => (
-              <div key={index} className="space-y-2">
-                {line.he && (
-                  <p className="text-lg text-deepRed/90 font-['Heebo'] leading-relaxed" dir="rtl">
-                    {line.he}
-                  </p>
-                )}
-                {line.tr && (
-                  <p className="text-base italic text-oliveGreen/75 leading-relaxed">
-                    {line.tr}
-                  </p>
-                )}
-                {line.en && (
-                  <p className="text-base text-earthBrown/80 leading-relaxed">
-                    {line.en}
-                  </p>
-                )}
-                {index < song.lyrics.length - 1 && line.he && (
-                  <div className="h-px bg-sageGreen/20 my-4"></div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </main>
-
-      <Footer />
-    </div>
+      <Player song={song} />
+      <Story song={song} />
+      <Lyrics song={song} />
+      <Pager song={song} />
+    </PageShell>
   );
 };
 

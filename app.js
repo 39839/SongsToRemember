@@ -1,10 +1,18 @@
-const { useState, useMemo, useRef } = React;
-const { Navigation, Footer } = window.SharedComponents || {};
-const SITE_ROOT = (typeof window !== 'undefined' && window.__SITE_ROOT__) || './';
+const { useState, useMemo, useEffect, useRef } = React;
+const { PageShell, Icon } = window.SharedComponents || {};
+const {
+  resolvePath,
+  thumbnailFor,
+  songUrl,
+  useReveal,
+  prefersReducedMotion,
+} = window.Zikaron || {};
 
-if (!Navigation || !Footer) {
+if (!PageShell) {
   throw new Error('Shared components failed to load.');
 }
+
+const songsData = window.songs || [];
 
 const MissionStatement = () => (
   <span>
@@ -12,186 +20,315 @@ const MissionStatement = () => (
   </span>
 );
 
-const slugify = (text) =>
-  text
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
+// The people named in each song's story. Linked to the song that remembers them.
+const REMEMBERED = [
+  { name: 'Alon Scagio', note: 'Capt. · Kfir Brigade, 2024', song: 'Beautiful Things to See' },
+  { name: 'Amit Man', note: "Paramedic · Kibbutz Be'eri, 2023", song: 'Nothing Will Hurt Me' },
+  { name: 'The victims of the Nova festival', note: "Kibbutz Re'im · October 7, 2023", song: 'Dance' },
+  { name: 'Sean Mondschein', note: 'Sgt. · Golani Brigade, 2014', song: 'Good Night, Sean' },
+  { name: 'Tom Farkash', note: 'Second Lebanon War, 2006', song: 'In Our Kindergarten' },
+  { name: 'Erez Stark', note: 'Lt. · Helicopter disaster, 1997', song: 'Nothing Will Hurt Me' },
+  { name: 'Chen Brod', note: 'Second Lt. · Lebanese border, 1985', song: 'Fruit of Your Garden' },
+  { name: 'The victims of Ras Burqa', note: 'Sinai · October 5, 1985', song: 'Perach (Flower)' },
+  { name: 'Zion Hazan', note: 'Lt. · Lebanon', song: 'Nothing Will Hurt Me' },
+  { name: 'Eleven members of one kibbutz', note: 'Yom Kippur War, 1973', song: 'The Wheat Grows Again' },
+].filter((person) => songsData.some((song) => song.title === person.song));
 
-const songsData = window.songs || [];
+const pad = (n) => String(n).padStart(2, '0');
 
-const getYouTubeId = (url) => {
-  if (!url) return "";
-  const match = url.match(
-    /(?:youtu\.be\/|v=|\/embed\/|\/watch\?v=|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/
-  );
-  return match ? match[1] : url;
-};
+/* --------------------------------------------------------------------------
+   Ambient looping video (Higgsfield-generated), with a still poster fallback
+   -------------------------------------------------------------------------- */
 
-const Hero = ({ onScrollToSongs }) => (
-  <header className="relative overflow-hidden bg-gradient-to-br from-[#faf9f5] via-[#f5f3eb] to-[#ebe8dc] text-earthBrown pt-16 pb-24">
-    <div className="absolute inset-0 opacity-20">
-      <div className="absolute top-10 left-20 w-72 h-72 bg-deepRed/20 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-10 right-20 w-96 h-96 bg-oliveGreen/15 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sageGreen/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-    </div>
-    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
-      <div className="flex flex-col items-center text-center gap-10">
-        {/* Definition Card - 40% smaller */}
-        <div className="bg-[#F2F0E4] rounded-3xl px-7 py-6 shadow-2xl border-2 border-[#e0ddc8] max-w-xl">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3" style={{fontFamily: 'Cardo, Georgia, serif', color: '#8B4513'}}>
-            Zi·ka·ron <span className="text-[#8B4513]/40">|</span> <span dir="rtl" style={{fontFamily: 'Cardo, serif'}}>זִכָּרוֹן</span>
-          </h1>
-          <p className="text-base font-bold mb-2" style={{color: '#2F4F4F', fontFamily: 'Cardo, Georgia, serif'}}>
-            noun
-          </p>
-          <p className="text-sm italic" style={{fontFamily: 'Cardo, Georgia, serif', color: '#2F4F4F'}}>
-            The Hebrew word for "memory" or "remembrance."
-          </p>
-        </div>
+const saveData = () =>
+  typeof navigator !== 'undefined' && navigator.connection && navigator.connection.saveData;
 
-        {/* Decorative Flower Divider */}
-        <div className="flex items-center justify-center gap-4">
-          <div className="h-px w-20 bg-gradient-to-r from-transparent via-deepRed to-transparent"></div>
-          <img src={`${SITE_ROOT}Flower.png`} alt="" className="h-10 w-auto animate-pulse" />
-          <div className="h-px w-20 bg-gradient-to-l from-transparent via-deepRed to-transparent"></div>
-        </div>
+const AmbientVideo = ({ name, alt, playing = true, lazy = false, priority = false }) => {
+  const videoRef = useRef(null);
+  const wrapRef = useRef(null);
+  const [ready, setReady] = useState(false);
+  const [inView, setInView] = useState(!lazy);
+  const stillOnly = prefersReducedMotion() || saveData();
+  const small = typeof window !== 'undefined' && window.innerWidth < 900;
+  const src = resolvePath(`assets/${name}${small ? '-sm' : ''}.mp4`);
 
-        {/* Main Body Text */}
-        <p className="max-w-4xl text-lg sm:text-xl leading-relaxed text-earthBrown/95 px-4 text-left" style={{fontFamily: 'Georgia, serif'}}>
-          <MissionStatement />
-        </p>
+  useEffect(() => {
+    if (!lazy || !('IntersectionObserver' in window)) return undefined;
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { rootMargin: '200px' });
+    if (wrapRef.current) observer.observe(wrapRef.current);
+    return () => observer.disconnect();
+  }, [lazy]);
 
-        <button
-          onClick={onScrollToSongs}
-          className="group px-10 py-5 bg-deepRed text-white text-lg font-bold rounded-full shadow-2xl hover:shadow-deepRed/40 transform hover:scale-110 transition-all duration-500"
-        >
-          <span className="flex items-center gap-3">
-            Explore the Collection
-            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
-            </svg>
-          </span>
-        </button>
-      </div>
-    </div>
-  </header>
-);
-
-const SongCard = ({ song }) => {
-  const videoId = getYouTubeId(song.videoUrl);
-  const thumbnail = videoId
-    ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
-    : "";
-  const songSlug = slugify(song.title);
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (playing && inView) {
+      const attempt = video.play();
+      if (attempt && attempt.catch) attempt.catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [playing, inView, ready]);
 
   return (
-    <a href={`${SITE_ROOT}songs/${songSlug}/`} className="block group h-full">
-      <article className="song-card bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transform group-hover:-translate-y-3 transition-all duration-500 border-2 border-sageGreen/20 group-hover:border-deepRed/40 flex flex-col h-full">
-        <div className="relative overflow-hidden h-56">
-          <img
-            src={thumbnail}
-            alt={`${song.title} thumbnail`}
-            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-300"></div>
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-400">
-            <div className="bg-white text-deepRed rounded-full p-6 shadow-2xl transform scale-75 group-hover:scale-100 transition-transform duration-400">
-              <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </div>
+    <div ref={wrapRef} style={{ position: 'absolute', inset: 0 }}>
+      <img
+        src={resolvePath(`assets/${name}.webp`)}
+        alt={alt}
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : undefined}
+        decoding="async"
+      />
+      {!stillOnly && (inView || ready) && (
+        <video
+          ref={videoRef}
+          className={ready ? 'is-ready' : ''}
+          src={src}
+          muted
+          loop
+          playsInline
+          autoPlay
+          preload="auto"
+          aria-hidden="true"
+          onCanPlay={() => setReady(true)}
+        />
+      )}
+    </div>
+  );
+};
+
+/* --------------------------------------------------------------------------
+   Sections
+   -------------------------------------------------------------------------- */
+
+const Hero = () => {
+  const [playing, setPlaying] = useState(true);
+  const reduced = prefersReducedMotion();
+
+  return (
+    <header className="hero on-ink">
+      <div className="hero__media">
+        <AmbientVideo
+          name="hero"
+          alt="Dusk over the Judean hills, with red Dam HaMaccabim flowers in the foreground"
+          playing={playing}
+          priority
+        />
+      </div>
+      <div className="hero__veil" aria-hidden="true"></div>
+
+      <div className="container hero__content">
+        <h1 className="display hero__title rise" style={{ '--i': 1 }}>
+          <span>Zikaron</span>
+          <span className="hebrew" lang="he">זִכָּרוֹן</span>
+        </h1>
+        <p className="hero__definition rise" style={{ '--i': 2 }}>
+          <span>Zi·ka·ron</span>
+          <span className="pos">noun</span>
+        </p>
+        <p className="hero__lede rise" style={{ '--i': 3 }}>
+          The Hebrew word for "memory" or "remembrance."
+        </p>
+        <div className="hero__actions rise" style={{ '--i': 4 }}>
+          <a href="#songs" className="btn btn--primary">
+            Explore the Collection
+            <Icon.ArrowRight />
+          </a>
+          <a href={resolvePath('about/')} className="btn btn--ghost">
+            About
+          </a>
+        </div>
+      </div>
+
+      {!reduced && (
+        <div className="hero__meta rise" style={{ '--i': 6 }}>
+          <button
+            type="button"
+            className="media-toggle"
+            onClick={() => setPlaying((p) => !p)}
+            aria-label={playing ? 'Pause background video' : 'Play background video'}
+          >
+            {playing ? <Icon.Pause /> : <Icon.Play />}
+          </button>
+        </div>
+      )}
+      <span className="scroll-cue" aria-hidden="true"></span>
+    </header>
+  );
+};
+
+const Mission = () => (
+  <section className="section" aria-labelledby="mission-title">
+    <div className="container mission">
+      <img src={resolvePath('assets/flower-sm.png')} alt="" className="mission__flower reveal" width="54" height="81" loading="lazy" />
+      <h2 id="mission-title" className="sr-only">About The Zikaron Project</h2>
+      <p className="mission__body reveal" style={{ '--i': 1 }}>
+        <MissionStatement />
+      </p>
+      <div className="reveal" style={{ '--i': 2 }}>
+        <a href={resolvePath('about/')} className="link-arrow">
+          Our Story
+          <Icon.ArrowRight />
+        </a>
+      </div>
+    </div>
+  </section>
+);
+
+const Memorial = () => (
+  <section className="memorial on-ink" aria-labelledby="memorial-title">
+    <div className="memorial__media">
+      <AmbientVideo name="candle" alt="A memorial candle burning on Jerusalem stone beside a sprig of red flowers" lazy />
+    </div>
+    <div className="memorial__veil" aria-hidden="true"></div>
+
+    <div className="container">
+      <div className="memorial__quote">
+        <p className="memorial__hebrew reveal" lang="he" style={{ '--i': 1 }}>
+          במותם ציוו לנו את החיים
+        </p>
+        <p className="memorial__english reveal" style={{ '--i': 2 }}>
+          “With their death, they commanded us to live.”
+        </p>
+      </div>
+
+      <div className="names">
+        <div className="names__head reveal">
+          <h2 id="memorial-title" className="eyebrow eyebrow--plain">In memory of</h2>
+        </div>
+        <ul className="names__list">
+          {REMEMBERED.map((person, index) => {
+            const song = songsData.find((s) => s.title === person.song);
+            return (
+              <li key={person.name} className="names__item reveal" style={{ '--i': index % 2 }}>
+                <a href={songUrl(song)}>
+                  <span>
+                    <span className="names__rank">{person.note}</span>
+                    <span className="names__name">{person.name}</span>
+                  </span>
+                  <span className="names__song">{song.title}</span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </div>
+  </section>
+);
+
+const SongCard = ({ song, number }) => (
+  <li className="song-card">
+    <a href={songUrl(song)} className="song-card__link">
+      <span className="song-card__thumb">
+        <img src={thumbnailFor(song, 'mqdefault')} alt="" width="320" height="180" loading="lazy" decoding="async" />
+        <span className="song-card__num">{pad(number)}</span>
+      </span>
+      <span className="song-card__body">
+        <span className="song-card__titles">
+          <span className="song-card__title">{song.title}</span>
+          <span className="song-card__he hebrew" lang="he">{song.titleHebrew}</span>
+        </span>
+        <span className="song-card__artist">{song.artist}</span>
+        {song.summary && <span className="song-card__summary">{song.summary}</span>}
+        <span className="song-card__more">
+          Read &amp; listen
+          <Icon.ArrowRight />
+        </span>
+      </span>
+    </a>
+  </li>
+);
+
+const Collection = () => {
+  const [query, setQuery] = useState('');
+  const term = query.trim().toLowerCase();
+
+  const numbered = useMemo(() => songsData.map((song, i) => ({ song, number: i + 1 })), []);
+
+  const filtered = useMemo(() => {
+    if (!term) return numbered;
+    return numbered.filter(({ song }) =>
+      [song.title, song.titleHebrew, song.artist, song.summary, song.context, song.credits]
+        .filter(Boolean)
+        .some((field) => field.toLowerCase().includes(term))
+    );
+  }, [term, numbered]);
+
+  useReveal([]);
+
+  const searching = term.length > 0;
+
+  return (
+    <section id="songs" className="section" style={{ scrollMarginTop: '40px' }} aria-labelledby="songs-title">
+      <div className="container">
+        <div className="collection__head">
+          <div className="reveal">
+            <h2 id="songs-title" className="h-section">
+              Songs of <em>Remembrance</em>
+            </h2>
+            <p className="collection__he hebrew" lang="he">שירי זיכרון</p>
+          </div>
+          <div className="search reveal" style={{ '--i': 1 }} role="search">
+            <Icon.Search />
+            <label htmlFor="song-search" className="sr-only">Search songs</label>
+            <input
+              id="song-search"
+              type="search"
+              placeholder="Search by title, artist, or story..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              autoComplete="off"
+            />
+            {searching && (
+              <button type="button" className="search__clear" onClick={() => setQuery('')} aria-label="Clear search">
+                <Icon.Close />
+              </button>
+            )}
           </div>
         </div>
-        <div className="p-6 space-y-3 bg-gradient-to-br from-white to-lightBeige/30 flex-grow">
-          <p className="text-xs uppercase tracking-[0.25em] text-oliveGreen font-bold">
-            {song.artist}
-          </p>
-          <h3 className="text-2xl font-bold text-earthBrown group-hover:text-deepRed transition-colors duration-400 leading-tight">
-            {song.title}
-          </h3>
-          {song.titleHebrew && (
-            <p className="text-xl font-semibold text-earthBrown group-hover:text-deepRed font-['Heebo'] leading-relaxed transition-colors duration-400" dir="rtl">
-              {song.titleHebrew}
-            </p>
-          )}
-          <div className="w-20 h-1 bg-gradient-to-r from-deepRed via-[#a82724] to-transparent rounded-full"></div>
-        </div>
-      </article>
-    </a>
+
+        <p className="sr-only" aria-live="polite">
+          {searching ? `${filtered.length} songs found` : ''}
+        </p>
+
+        <ol className="song-grid">
+          {filtered.map(({ song, number }) => (
+            <SongCard key={song.id} song={song} number={number} />
+          ))}
+        </ol>
+
+        {searching && filtered.length === 0 && (
+          <div className="empty">
+            <p>No songs match “{query.trim()}”.</p>
+            <p>Try a different title, artist, or word from a song's story.</p>
+          </div>
+        )}
+      </div>
+    </section>
   );
 };
 
 const App = () => {
-  const [query, setQuery] = useState("");
-  const songsSectionRef = useRef(null);
+  useReveal([]);
 
-  const filteredSongs = useMemo(() => {
-    const term = query.toLowerCase();
-    return songsData.filter(
-      (song) =>
-        song.title.toLowerCase().includes(term) ||
-        song.artist.toLowerCase().includes(term) ||
-        song.context.toLowerCase().includes(term)
-    );
-  }, [query]);
-
-  const handleNavigation = (section) => {
-    if (section === 'home') {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
+  // The page renders after load, so honour a #songs link manually.
+  useEffect(() => {
+    if (window.location.hash === '#songs') {
+      const target = document.getElementById('songs');
+      if (target) setTimeout(() => target.scrollIntoView({ behavior: 'smooth' }), 150);
     }
-    if (section === 'songs' && songsSectionRef.current) {
-      songsSectionRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#faf9f5] via-[#f5f3eb] to-[#ebe8dc]">
-      <Navigation onNavigate={handleNavigation} />
-      <Hero onScrollToSongs={() => handleNavigation('songs')} />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
-        <section id="songs" ref={songsSectionRef} className="py-24">
-          <div className="text-center mb-20">
-            <h2 className="text-[2.875rem] md:text-[3.375rem] font-bold bg-gradient-to-r from-earthBrown via-deepRed to-earthBrown bg-clip-text text-transparent leading-tight pb-1 sm:pb-2">
-              Songs of Remembrance
-            </h2>
-          </div>
-
-          <div className="max-w-2xl mx-auto mb-20">
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-deepRed via-oliveGreen to-sageGreen rounded-2xl blur-lg opacity-25 group-hover:opacity-50 transition-opacity duration-500"></div>
-              <input
-                type="text"
-                placeholder="Search by title, artist, or story..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="relative w-full rounded-2xl border-2 border-sageGreen/40 bg-white/95 backdrop-blur-sm pl-7 pr-7 py-5 text-lg text-earthBrown placeholder:text-earthBrown/50 focus:outline-none focus:border-deepRed focus:ring-4 focus:ring-deepRed/20 transition-all duration-300 shadow-xl"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-            {filteredSongs.map((song) => (
-              <SongCard key={song.id} song={song} />
-            ))}
-          </div>
-          {filteredSongs.length === 0 && (
-            <div className="text-center mt-20 space-y-4">
-              <p className="text-3xl font-bold text-earthBrown/70">No songs match your search.</p>
-              <p className="text-xl text-earthBrown/50">Please try different keywords.</p>
-            </div>
-          )}
-        </section>
-      </main>
-
-      <Footer />
-    </div>
+    <PageShell current="home">
+      <Hero />
+      <Mission />
+      <Memorial />
+      <Collection />
+    </PageShell>
   );
 };
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);

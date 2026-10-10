@@ -4,297 +4,256 @@ const SITE_ROOT = (typeof window !== 'undefined' && window.__SITE_ROOT__) || './
 
 const resolvePath = (target) => `${SITE_ROOT}${target}`;
 
-const ShareButton = () => {
-  const [showTooltip, setShowTooltip] = useState(false);
-  const [tooltipText, setTooltipText] = useState('Share');
+/* --------------------------------------------------------------------------
+   Shared helpers
+   -------------------------------------------------------------------------- */
 
-  const handleShare = async () => {
-    const shareData = {
-      title: document.title,
-      url: window.location.href
-    };
+const slugify = (text) =>
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
 
-    // Try to use Web Share API (works on mobile and some modern browsers)
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-        setTooltipText('Shared!');
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          // Fallback to clipboard if share was cancelled
-          copyToClipboard();
-        }
-      }
-    } else {
-      // Fallback to clipboard
-      copyToClipboard();
+const getYouTubeId = (url) => {
+  if (!url) return '';
+  const match = url.match(/(?:youtu\.be\/|v=|\/embed\/|\/watch\?v=|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/);
+  return match ? match[1] : url;
+};
+
+const thumbnailFor = (song, quality = 'maxresdefault') => {
+  const id = getYouTubeId(song.videoUrl);
+  return id ? `https://img.youtube.com/vi/${id}/${quality}.jpg` : '';
+};
+
+// YouTube serves a tiny grey placeholder when maxres doesn't exist; fall back to hq.
+const handleThumbError = (event) => {
+  const img = event.currentTarget;
+  if (img.dataset.fallback) return;
+  img.dataset.fallback = '1';
+  img.src = img.src.replace('maxresdefault', 'hqdefault');
+};
+
+const handleThumbLoad = (event) => {
+  const img = event.currentTarget;
+  if (!img.dataset.fallback && img.naturalWidth > 0 && img.naturalWidth < 200) {
+    handleThumbError(event);
+  }
+};
+
+const songUrl = (song) => resolvePath(`songs/${slugify(song.title)}/`);
+
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Fades `.reveal` elements in as they enter the viewport. Re-run when the list changes.
+const useReveal = (deps = []) => {
+  useEffect(() => {
+    const nodes = Array.from(document.querySelectorAll('.reveal:not(.is-visible)'));
+    if (!('IntersectionObserver' in window) || prefersReducedMotion()) {
+      nodes.forEach((node) => node.classList.add('is-visible'));
+      return undefined;
     }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
+    );
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, deps);
+};
+
+/* --------------------------------------------------------------------------
+   Icons
+   -------------------------------------------------------------------------- */
+
+const Icon = {
+  ArrowRight: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 12h15M13 6l6 6-6 6" />
+    </svg>
+  ),
+  ArrowLeft: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M20 12H5M11 6l-6 6 6 6" />
+    </svg>
+  ),
+  Play: () => (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M7 4.5v15a.8.8 0 0 0 1.2.7l12.3-7.5a.8.8 0 0 0 0-1.4L8.2 3.8A.8.8 0 0 0 7 4.5z" />
+    </svg>
+  ),
+  Pause: () => (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <rect x="6" y="4.5" width="4" height="15" rx="1" />
+      <rect x="14" y="4.5" width="4" height="15" rx="1" />
+    </svg>
+  ),
+  Share: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 3v12M7.5 7.5 12 3l4.5 4.5" />
+      <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" />
+    </svg>
+  ),
+  Search: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="m20 20-4.2-4.2" />
+    </svg>
+  ),
+  Close: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+      <path d="M6 6l12 12M18 6 6 18" />
+    </svg>
+  ),
+  Menu: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+      <path d="M4 8h16M4 16h16" />
+    </svg>
+  ),
+};
+
+/* --------------------------------------------------------------------------
+   Share
+   -------------------------------------------------------------------------- */
+
+const ShareButton = () => {
+  const [tip, setTip] = useState('');
+
+  const flash = (text) => {
+    setTip(text);
+    setTimeout(() => setTip(''), 2200);
   };
 
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      setTooltipText('Link copied!');
-      setTimeout(() => {
-        setTooltipText('Share');
-        setShowTooltip(false);
-      }, 2000);
+      flash('Link copied');
     } catch (err) {
-      setTooltipText('Unable to copy');
-      setTimeout(() => {
-        setTooltipText('Share');
-        setShowTooltip(false);
-      }, 2000);
+      flash('Unable to copy the link');
     }
   };
 
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: document.title, url: window.location.href });
+      } catch (err) {
+        if (err.name !== 'AbortError') copyToClipboard();
+      }
+      return;
+    }
+    copyToClipboard();
+  };
+
   return (
-    <div className="relative">
-      <button
-        onClick={handleShare}
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => {
-          if (tooltipText === 'Share') setShowTooltip(false);
-        }}
-        className="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 hover:bg-gray-100"
-        aria-label="Share this page"
-        style={{color: '#2C2C2C'}}
-        onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#F2F0E4'}
-        onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-      >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-        </svg>
+    <div className="share">
+      <button type="button" className="share__btn" onClick={handleShare} aria-label="Share this song">
+        <Icon.Share />
+        Share
       </button>
-      {showTooltip && (
-        <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg z-50">
-          {tooltipText}
-          <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45"></div>
-        </div>
-      )}
+      {tip && <div className="share__tip" role="status">{tip}</div>}
     </div>
   );
 };
 
-const Navigation = ({ onNavigate }) => {
+/* --------------------------------------------------------------------------
+   Navigation
+   -------------------------------------------------------------------------- */
+
+const NAV_ITEMS = [
+  { label: 'Home', key: 'home', href: 'home/' },
+  { label: 'Songs', key: 'songs', href: 'home/#songs' },
+  { label: 'About', key: 'about', href: 'about/' },
+  { label: 'Requests', key: 'requests', href: 'requests/' },
+];
+
+const Navigation = ({ current }) => {
+  const [solid, setSolid] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleNavigation = (section) => {
-    if (typeof onNavigate === 'function') {
-      if (section === 'home') {
-        onNavigate('home');
-        setMenuOpen(false);
-        return;
-      }
-      if (section === 'songs') {
-        onNavigate('songs');
-        setMenuOpen(false);
-        return;
-      }
-    }
-
-    if (section === 'songs') {
-      window.location.href = resolvePath('home/#songs');
-    } else if (section === 'about') {
-      window.location.href = resolvePath('about/');
-    } else if (section === 'requests') {
-      window.location.href = resolvePath('requests/');
-    } else {
-      window.location.href = resolvePath('home/');
-    }
-
-    setMenuOpen(false);
-  };
-
-  const navItems = [
-    { label: 'Home', section: 'home' },
-    { label: 'Songs', section: 'songs' },
-    { label: 'About', section: 'about' },
-    { label: 'Requests', section: 'requests' },
-  ];
-
-  const linkClass =
-    "relative px-5 py-2 text-[0.9rem] tracking-[0.15em] uppercase font-medium transition-colors duration-300";
-
-  return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200/60">
-      <div className="max-w-7xl mx-auto" style={{padding: '0 5%'}}>
-        <div className="flex items-center justify-between" style={{height: '85px'}}>
-          {/* Logo - Left Side */}
-          <div className="flex-shrink-0">
-            <button
-              type="button"
-              onClick={() => handleNavigation('home')}
-              className="focus:outline-none transition-opacity duration-300 hover:opacity-80"
-              aria-label="Go to home"
-            >
-              {/* Desktop Logo */}
-              <img
-                src={resolvePath('NewHorizontalLogo.png')}
-                alt="The Zikaron Project"
-                className="hidden md:block h-[60px] w-auto"
-              />
-              {/* Mobile Logo */}
-              <img
-                src={resolvePath('MobileLogo.png')}
-                alt="The Zikaron Project"
-                className="block md:hidden h-[50px] w-auto"
-              />
-            </button>
-          </div>
-
-          {/* Navigation Links - Right Side */}
-          <div className="hidden md:flex gap-2 items-center ml-auto justify-end" style={{fontFamily: 'Montserrat, -apple-system, BlinkMacSystemFont, sans-serif'}}>
-            {navItems.map((item) => (
-              <button
-                key={item.section}
-                onClick={() => handleNavigation(item.section)}
-                className={`${linkClass} group`}
-                style={{color: '#2C2C2C'}}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#9E3E36'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#2C2C2C'}
-              >
-                {item.label}
-                <span
-                  className="absolute left-1/2 -bottom-1 w-0 h-0.5 transition-all duration-300 -translate-x-1/2 group-hover:w-full"
-                  style={{backgroundColor: '#9E3E36'}}
-                ></span>
-              </button>
-            ))}
-          </div>
-
-          {/* Mobile Menu Button - Right Side */}
-          <button
-            type="button"
-            className="md:hidden inline-flex items-center justify-center p-3 rounded-full border transition-colors"
-            style={{borderColor: '#2C2C2C20', color: '#2C2C2C'}}
-            onClick={() => setMenuOpen((prev) => !prev)}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = '#9E3E36';
-              e.currentTarget.style.color = '#9E3E36';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = '#2C2C2C20';
-              e.currentTarget.style.color = '#2C2C2C';
-            }}
-            aria-label="Toggle navigation menu"
-          >
-            {menuOpen ? (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            )}
-          </button>
-        </div>
-        {menuOpen && (
-          <div className="md:hidden border-t pt-4 pb-6 space-y-3" style={{borderColor: '#2C2C2C10'}}>
-            {navItems.map((item) => (
-              <button
-                key={item.section}
-                onClick={() => handleNavigation(item.section)}
-                className="w-full text-left px-5 py-3 rounded-2xl font-semibold tracking-[0.15em] uppercase text-sm transition-colors"
-                style={{backgroundColor: '#F2F0E4', color: '#2C2C2C'}}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#9E3E36'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#2C2C2C'}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    </nav>
-  );
-};
-
-const MemorialCarousel = () => {
-  const swiperRef = useRef(null);
-  const containerRef = useRef(null);
-
-  const fallenSoldiers = [
-    { name: "Itzhak (Itzik) Amir", rank: "Private", image: "https://izkorimagescdn.azureedge.net/fallenimages/515535.jpg" },
-    { name: "Arie Hershkovitch", rank: "Private", image: "https://izkorimagescdn.azureedge.net/fallenimages/no_fallen_image.jpg" },
-    { name: "Nisim (Avner) Tarango", rank: "First Corporal", image: "https://izkorimagescdn.azureedge.net/fallenimages/004315.jpg" },
-    { name: "Yehezkel Mukmal", rank: "", image: "https://izkorimagescdn.azureedge.net/fallenimages/no_fallen_image.jpg" },
-    { name: "Alon (Aloni) Yigali", rank: "Corporal", image: "https://izkorimagescdn.azureedge.net/fallenimages/512243.jpg" },
-    { name: "Yaakov (Yankale) Yafe", rank: "Sergeant", image: "https://izkorimagescdn.azureedge.net/fallenimages/097537.jpg" },
-    { name: "Shalom (Sherly) Algam", rank: "Lance corporal", image: "https://izkorimagescdn.azureedge.net/fallenimages/098654.jpg" },
-    { name: "Shalom (Sharel) Ohaion", rank: "Private", image: "https://izkorimagescdn.azureedge.net/fallenimages/008038.jpg" },
-    { name: "David Shimonovitch", rank: "", image: "https://izkorimagescdn.azureedge.net/fallenimages/515867.jpg" },
-    { name: "Benyamin Gratner", rank: "", image: "https://izkorimagescdn.azureedge.net/fallenimages/no_fallen_image.jpg" },
-    { name: "Matan Polivoda", rank: "Staff Sergeant", image: "https://izkorimagescdn.azureedge.net/fallenimages/514739.jpg" },
-    { name: "Guy Leo", rank: "Sergeant", image: "https://izkorimagescdn.azureedge.net/fallenimages/515787.jpg" },
-    { name: "Moshe Ziporin", rank: "Private", image: "https://izkorimagescdn.azureedge.net/fallenimages/004109.jpg" },
-    { name: "Edgar Dreifus", rank: "First Lieutenant", image: "https://izkorimagescdn.azureedge.net/fallenimages/090638.jpg" },
-    { name: "Naftali-Yonah Gordon", rank: "Master Sergeant", image: "https://izkorimagescdn.azureedge.net/fallenimages/519335.jpg" }
-  ];
-
   useEffect(() => {
-    if (containerRef.current && typeof Swiper !== 'undefined') {
-      swiperRef.current = new Swiper(containerRef.current, {
-        slidesPerView: 'auto',
-        spaceBetween: 15,
-        navigation: {
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev',
-        },
-        breakpoints: {
-          640: {
-            slidesPerView: 2,
-            spaceBetween: 15,
-          },
-          768: {
-            slidesPerView: 3,
-            spaceBetween: 20,
-          },
-          1024: {
-            slidesPerView: 4,
-            spaceBetween: 20,
-          },
-        },
-      });
-    }
-
-    return () => {
-      if (swiperRef.current && swiperRef.current.destroy) {
-        swiperRef.current.destroy();
-      }
-    };
+    const onScroll = () => setSolid(window.scrollY > 40);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    const onKey = (e) => e.key === 'Escape' && setMenuOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [menuOpen]);
+
+  const overlay = !solid || menuOpen;
+
   return (
-    <div className="memorial-carousel-wrapper">
-      <div ref={containerRef} className="swiper">
-        <div className="swiper-wrapper">
-          {fallenSoldiers.map((soldier, index) => (
-            <div key={index} className="swiper-slide" style={{width: '200px'}}>
-              <div className="bg-white/10 rounded-lg overflow-hidden shadow-lg backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300">
-                <div className="aspect-square overflow-hidden bg-gray-200">
-                  <img
-                    src={soldier.image}
-                    alt={soldier.name}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="p-3 text-center">
-                  {soldier.rank && <p className="text-xs text-sageGreen/90 mb-1">{soldier.rank}</p>}
-                  <p className="text-sm font-medium text-lightBeige">{soldier.name}</p>
-                </div>
-              </div>
-            </div>
-          ))}
+    <React.Fragment>
+      <nav className={`site-nav ${overlay ? 'site-nav--overlay' : 'site-nav--solid'}`} aria-label="Main">
+        <div className="container site-nav__inner">
+          <a href={resolvePath('home/')} className="site-nav__brand" aria-label="The Zikaron Project — home">
+            <img src={resolvePath('NewHorizontalLogo.png')} alt="The Zikaron Project" />
+          </a>
+
+          <div className="site-nav__links">
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.key}
+                href={resolvePath(item.href)}
+                className="site-nav__link"
+                aria-current={current === item.key ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            className="site-nav__toggle"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          >
+            {menuOpen ? <Icon.Close /> : <Icon.Menu />}
+          </button>
         </div>
-        <div className="swiper-button-prev" style={{color: '#B6C197'}}></div>
-        <div className="swiper-button-next" style={{color: '#B6C197'}}></div>
+      </nav>
+
+      <div id="mobile-menu" className={`mobile-menu ${menuOpen ? 'mobile-menu--open' : ''}`} aria-hidden={!menuOpen}>
+        {NAV_ITEMS.map((item, index) => (
+          <a
+            key={item.key}
+            href={resolvePath(item.href)}
+            onClick={() => setMenuOpen(false)}
+            aria-current={current === item.key ? 'page' : undefined}
+            tabIndex={menuOpen ? 0 : -1}
+            style={{ transitionDelay: menuOpen ? `${120 + index * 70}ms` : '0ms' }}
+          >
+            {item.label}
+          </a>
+        ))}
+        <p className="mobile-menu__foot hebrew">יהי זכרם ברוך</p>
       </div>
-    </div>
+    </React.Fragment>
   );
 };
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
 
 const FOOTER_QUOTES = [
   {
@@ -325,148 +284,127 @@ const FOOTER_QUOTES = [
 ];
 
 const Footer = () => {
-  const [currentQuote, setCurrentQuote] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [current, setCurrent] = useState(0);
+  const [fading, setFading] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const timeoutRef = useRef(null);
+
+  const goTo = (getNext) => {
+    setFading(true);
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      setCurrent(getNext);
+      setFading(false);
+    }, 600);
+  };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setCurrentQuote((prev) => (prev + 1) % FOOTER_QUOTES.length);
-        setIsTransitioning(false);
-      }, 500);
-    }, 8000);
-
+    if (paused || prefersReducedMotion()) return undefined;
+    const interval = setInterval(() => goTo((prev) => (prev + 1) % FOOTER_QUOTES.length), 9000);
     return () => clearInterval(interval);
-  }, []);
+  }, [paused]);
 
-  const nextQuote = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentQuote((prev) => (prev + 1) % FOOTER_QUOTES.length);
-      setIsTransitioning(false);
-    }, 500);
-  };
+  useEffect(() => () => clearTimeout(timeoutRef.current), []);
 
-  const prevQuote = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentQuote((prev) => (prev - 1 + FOOTER_QUOTES.length) % FOOTER_QUOTES.length);
-      setIsTransitioning(false);
-    }, 500);
-  };
+  const quote = FOOTER_QUOTES[current];
 
   return (
-  <footer className="mt-32 bg-gradient-to-br from-earthBrown via-[#7a6751] to-[#6b5943] text-lightBeige relative overflow-hidden">
-    <div className="absolute inset-0 opacity-10">
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-deepRed rounded-full blur-3xl"></div>
-    </div>
-    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-20">
-      <div className="flex flex-col items-center mb-16">
-        <img
-          src={resolvePath('NewHorizontalLogo.png')}
-          alt="The Zikaron Project"
-          className="h-28 w-auto mb-8 filter brightness-0 invert opacity-95 drop-shadow-lg"
-        />
-        <div className="w-32 h-px bg-gradient-to-r from-transparent via-sageGreen to-transparent"></div>
-      </div>
-
-      {/* Quote Carousel */}
-      <div className="mb-12">
-        <div className="max-w-4xl mx-auto relative">
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 md:p-10 shadow-xl border border-white/10 relative overflow-hidden">
-            {/* Navigation Arrows */}
-            <button
-              onClick={prevQuote}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-sageGreen/20 hover:bg-sageGreen/40 backdrop-blur-sm flex items-center justify-center transition-all duration-300 hover:scale-110 z-10"
-              aria-label="Previous quote"
-            >
-              <svg className="w-5 h-5 text-lightBeige" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button
-              onClick={nextQuote}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-sageGreen/20 hover:bg-sageGreen/40 backdrop-blur-sm flex items-center justify-center transition-all duration-300 hover:scale-110 z-10"
-              aria-label="Next quote"
-            >
-              <svg className="w-5 h-5 text-lightBeige" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-
-            {/* Quote Content */}
-            <div className="px-8 md:px-12">
-              {/* Hebrew Text */}
-              <div className={`mb-6 text-center transition-all duration-500 ease-in-out min-h-[5rem] flex items-center justify-center ${
-                isTransitioning ? 'opacity-0 -translate-y-4' : 'opacity-100 translate-y-0'
-              }`}>
-                <p className="text-xl md:text-2xl font-serif text-lightBeige leading-relaxed"
-                   style={{direction: 'rtl', fontFamily: 'Frank Ruhl Libre, serif', lineHeight: '1.8'}}>
-                  {FOOTER_QUOTES[currentQuote].hebrew}
-                </p>
-              </div>
-
-              {/* Small Divider */}
-              <div className={`flex items-center justify-center my-6 transition-all duration-500 ease-in-out ${
-                isTransitioning ? 'opacity-0' : 'opacity-100'
-              }`}>
-                <div className="w-16 h-px bg-gradient-to-r from-transparent via-sageGreen to-transparent"></div>
-                <div className="mx-3 w-1.5 h-1.5 rounded-full bg-sageGreen"></div>
-                <div className="w-16 h-px bg-gradient-to-r from-transparent via-sageGreen to-transparent"></div>
-              </div>
-
-              {/* English Translation */}
-              <div className={`mb-4 text-center transition-all duration-500 ease-in-out min-h-[4.5rem] flex items-center justify-center ${
-                isTransitioning ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
-              }`}>
-                <p className="text-base md:text-lg italic text-lightBeige/90 leading-relaxed"
-                   style={{fontFamily: 'Cardo, serif'}}>
-                  {FOOTER_QUOTES[currentQuote].english}
-                </p>
-              </div>
-
-              {/* Reference */}
-              <div className={`text-center transition-all duration-500 ease-in-out ${
-                isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
-              }`}>
-                <p className="text-sm text-sageGreen/90 font-medium tracking-wide">
-                  — {FOOTER_QUOTES[currentQuote].reference} —
-                </p>
-              </div>
-
-              {/* Progress Dots */}
-              <div className="flex items-center justify-center gap-2 mt-6">
-                {FOOTER_QUOTES.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentQuote(index)}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      index === currentQuote
-                        ? 'bg-sageGreen w-8'
-                        : 'bg-lightBeige/30 hover:bg-lightBeige/50'
-                    }`}
-                    aria-label={`Go to quote ${index + 1}`}
-                  />
-                ))}
-              </div>
-            </div>
+    <footer className="site-footer on-ink">
+      <div
+        className="container footer-quote"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onFocus={() => setPaused(true)}
+        onBlur={() => setPaused(false)}
+      >
+        <img src={resolvePath('assets/flower-sm.png')} alt="" className="footer-quote__flower" />
+        <figure className={`footer-quote__body ${fading ? 'footer-quote__body--out' : ''}`} aria-live="polite">
+          <blockquote>
+            <p className="footer-quote__he" lang="he">{quote.hebrew}</p>
+            <p className="footer-quote__en">{quote.english}</p>
+          </blockquote>
+          <figcaption className="footer-quote__ref">{quote.reference}</figcaption>
+        </figure>
+        <div className="footer-quote__nav">
+          <button
+            type="button"
+            className="footer-quote__arrow"
+            onClick={() => goTo((prev) => (prev - 1 + FOOTER_QUOTES.length) % FOOTER_QUOTES.length)}
+            aria-label="Previous verse"
+          >
+            <Icon.ArrowLeft />
+          </button>
+          <div className="dots">
+            {FOOTER_QUOTES.map((q, index) => (
+              <button
+                key={q.reference}
+                type="button"
+                onClick={() => goTo(() => index)}
+                aria-label={`Show ${q.reference}`}
+                aria-current={index === current ? 'true' : undefined}
+              />
+            ))}
           </div>
+          <button
+            type="button"
+            className="footer-quote__arrow"
+            onClick={() => goTo((prev) => (prev + 1) % FOOTER_QUOTES.length)}
+            aria-label="Next verse"
+          >
+            <Icon.ArrowRight />
+          </button>
         </div>
       </div>
 
-      <div className="border-t-2 border-lightBeige/30 pt-10 flex flex-col sm:flex-row justify-between items-center gap-6">
-        <p className="text-base text-lightBeige/70">
-          © {new Date().getFullYear()} The Zikaron Project. All rights reserved.
-        </p>
-        <p className="text-lg text-sageGreen font-bold italic tracking-wide">
-          May their memory be a blessing
-        </p>
+      <div className="container">
+        <div className="footer-base">
+          <a href={resolvePath('home/')} className="footer-base__brand" aria-label="The Zikaron Project — home">
+            <img src={resolvePath('NewHorizontalLogo.png')} alt="The Zikaron Project" />
+          </a>
+          <ul className="footer-base__links">
+            {NAV_ITEMS.map((item) => (
+              <li key={item.key}>
+                <a href={resolvePath(item.href)}>{item.label}</a>
+              </li>
+            ))}
+            <li>
+              <a href="mailto:thezikaronproject@outlook.com">Contact</a>
+            </li>
+          </ul>
+          <div className="footer-base__right">
+            <p className="footer-base__bless">May their memory be a blessing</p>
+            <p className="footer-base__copy">© {new Date().getFullYear()} The Zikaron Project. All rights reserved.</p>
+          </div>
+        </div>
       </div>
-    </div>
-  </footer>
+    </footer>
   );
 };
 
-window.SharedComponents = { Navigation, Footer, MemorialCarousel, ShareButton };
+/* --------------------------------------------------------------------------
+   Page shell
+   -------------------------------------------------------------------------- */
+
+const PageShell = ({ current, children }) => (
+  <React.Fragment>
+    <a href="#main" className="skip-link">Skip to content</a>
+    <div className="grain" aria-hidden="true"></div>
+    <Navigation current={current} />
+    <main id="main">{children}</main>
+    <Footer />
+  </React.Fragment>
+);
+
+window.SharedComponents = { Navigation, Footer, ShareButton, PageShell, Icon };
+window.Zikaron = {
+  SITE_ROOT,
+  resolvePath,
+  slugify,
+  getYouTubeId,
+  thumbnailFor,
+  handleThumbError,
+  handleThumbLoad,
+  songUrl,
+  useReveal,
+  prefersReducedMotion,
+};

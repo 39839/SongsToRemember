@@ -1,7 +1,7 @@
-const { Navigation, Footer } = window.SharedComponents || {};
-const SITE_ROOT = (typeof window !== 'undefined' && window.__SITE_ROOT__) || './';
+const { PageShell, Icon } = window.SharedComponents || {};
+const { resolvePath, useReveal } = window.Zikaron || {};
 
-if (!Navigation || !Footer) {
+if (!PageShell) {
   throw new Error('Shared components missing on about page.');
 }
 
@@ -51,130 +51,119 @@ const aboutEssayHebrew = `
 
 כעת, כאשר עמנו מתמודד עם אתגרים וטרגדיות חדשות שאיננו יכולים להרשות לעצמנו לשכוח, עלינו למצוא דרכים חדשות לזכור. כשם שטקסט ומוזיקה היו חיוניים בשימור הזיכרון הלאומי של דורות של יהודים, שירי זיכרון כבר הפכו לשיטה חיונית בקרב ישראלים בני זמננו לתיעוד חוויותיהם המשותפות. מאז 1951, כאשר דוד בן-גוריון הקים את "המועצה הציבורית להנצחת החיילים" אשר קבעה את יום ד' באייר כ"יום זיכרון כללי לגיבורי מלחמת העצמאות" (שנחקק מאוחר יותר ב-1963), אזרחי ישראל מציינים את התאריך מדי שנה בטקסי זיכרון ארציים וצפירת צפירה בת שתי דקות לציון דקת דומיה ברחבי הארץ לכבוד הנופלים. בטקסי יום הזיכרון ובאירועים כמו שירה בציבור, מוזיקה הפכה לכלי עבור ישראלים לספר את חוויותיהם ולמצוא נחמה זה בזה. לכן, מוזיקה זו היא שיכולה להצליח לחבר את העם היהודי שוב, ולשמש כביטוי האמיתי ביותר לכאבו, לאנושיותו ולאומיותו. כשם שתרגומי התורה היו חיוניים בשמירה על הזהות היהודית לאורך מאות שנים של תפוצות, גם תרגום שירי זיכרון יכול לגשר על הפער בין הקהילות היהודיות של ימינו - ובין העולם היהודי לעולם הלא-יהודי. עם תחיית השפה העברית בסוף המאה ה-19 והקמת מדינת ישראל, כמו גם עוינות גוברת כלפי יהודים ברחבי העולם, העם היהודי מתמודד עם אתגרים חסרי תקדים וכלים חסרי תקדים. בסופו של דבר, איננו יכולים להילחם בדה-הומניזציה של יהודים באמצעות עובדות ואסטרטגיות צבאיות בלבד - וגם לא יכולים יהודים לשמר את תחושת האנושיות והזהות המשותפת שלהם, בעולם שהופך לחילוני יותר ויותר, באמצעות כתבי קודש ותפילה בלבד. על ידי תרגום שירי זיכרון עבריים ויצירת סרטוני ליריקה מרתקים ויזואלית, הפרויקט שלי שואף לספק אמצעי ליהודים ולא יהודים כאחד להתחבר לסיפור הישראלי - ולכן היהודי - ובתוך כך להנציח ולהנציח את חייהם של אלה שאיבדנו.`;
 
-const aboutParagraphs = aboutEssay.split(/\n\s*\n/);
-const aboutParagraphsHebrew = aboutEssayHebrew.split(/\n\s*\n/);
+const aboutParagraphs = aboutEssay.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+const aboutParagraphsHebrew = aboutEssayHebrew.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+
+const PULL_QUOTE = "And even when the language was too advanced for me, the tune and the melody conveyed what the words didn't.";
 
 const { useState } = React;
 
 const AboutPage = () => {
   const [language, setLanguage] = useState('english');
-
-  const currentParagraphs = language === 'english' ? aboutParagraphs : aboutParagraphsHebrew;
   const isHebrew = language === 'hebrew';
+  const paragraphs = isHebrew ? aboutParagraphsHebrew : aboutParagraphs;
+
+  useReveal([language]);
 
   return (
-  <div className="min-h-screen bg-gradient-to-br from-[#faf9f5] via-[#f5f3eb] to-[#ebe8dc]">
-    <Navigation />
-    <header className="relative overflow-hidden bg-gradient-to-br from-[#faf9f5] via-[#f5f3eb] to-[#ebe8dc] text-earthBrown py-24">
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-12 left-24 w-72 h-72 bg-deepRed/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-12 right-24 w-96 h-96 bg-oliveGreen/15 rounded-full blur-3xl"></div>
-      </div>
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 text-center space-y-8">
-        <p className="text-sm uppercase tracking-[0.35em] text-oliveGreen font-bold">About The Project</p>
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight bg-gradient-to-r from-earthBrown via-deepRed to-earthBrown bg-clip-text text-transparent pb-2">
-          The Zikaron Project
-        </h1>
-        <p className="text-xl text-earthBrown/90 leading-relaxed max-w-3xl mx-auto">
-          The Zikaron Project shares the heart of Israel's remembrance tradition with the world through carefully translated lyrics, cinematic storytelling, and reverent design.
-        </p>
-      </div>
-    </header>
-
-    <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-24 space-y-16">
-      <section className="bg-gradient-to-br from-white via-[#fefdfb] to-lightBeige/20 border-2 border-deepRed/30 rounded-3xl shadow-2xl p-10 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <p className="text-sm uppercase tracking-[0.35em] text-deepRed font-bold">Our Story</p>
-            <h2 className="text-4xl font-bold text-earthBrown">The Zikaron Project: Our Origins</h2>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setLanguage('english')}
-              className={`px-6 py-2 rounded-full font-medium transition-all ${
-                language === 'english'
-                  ? 'bg-deepRed text-white shadow-lg'
-                  : 'bg-white text-earthBrown border-2 border-earthBrown/30 hover:border-deepRed/50'
-              }`}
-            >
-              English
-            </button>
-            <button
-              onClick={() => setLanguage('hebrew')}
-              className={`px-6 py-2 rounded-full font-medium transition-all ${
-                language === 'hebrew'
-                  ? 'bg-deepRed text-white shadow-lg'
-                  : 'bg-white text-earthBrown border-2 border-earthBrown/30 hover:border-deepRed/50'
-              }`}
-              style={{fontFamily: 'Frank Ruhl Libre, serif'}}
-            >
-              עברית
-            </button>
-          </div>
+    <PageShell current="about">
+      <header className="page-hero on-ink">
+        <div className="page-hero__media">
+          <img src={resolvePath('assets/shore.webp')} alt="Sea foam retreating across the sand at dusk" />
         </div>
-        <article
-          className="space-y-6 text-earthBrown/90 text-lg leading-relaxed"
-          style={isHebrew ? {direction: 'rtl', fontFamily: 'Frank Ruhl Libre, serif'} : {}}
-        >
-          {currentParagraphs.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
-        </article>
-      </section>
-
-      <section className="grid lg:grid-cols-2 gap-10">
-        <div className="bg-white/95 border-2 border-sageGreen/40 rounded-3xl shadow-2xl p-10 space-y-6">
-          <p className="text-sm uppercase tracking-[0.35em] text-oliveGreen font-bold">Our Mission</p>
-          <h2 className="text-3xl font-bold text-earthBrown">Holding Memory in Two Languages</h2>
-          <p className="text-lg leading-relaxed text-earthBrown/90">
-            {missionStatement}
+        <div className="page-hero__veil" aria-hidden="true"></div>
+        <div className="container page-hero__content">
+          <h1 className="display page-hero__title rise" style={{ '--i': 1 }}>
+            The Zikaron Project
+          </h1>
+          <p className="page-hero__lede rise" style={{ '--i': 2 }}>
+            The Zikaron Project shares the heart of Israel's remembrance tradition with the world through carefully translated lyrics, cinematic storytelling, and reverent design.
           </p>
-          <a
-            href={`${SITE_ROOT}home/#songs`}
-            className="inline-flex items-center gap-3 px-6 py-3 bg-deepRed text-white rounded-full font-semibold shadow-lg hover:shadow-deepRed/40 transition-transform hover:-translate-y-1"
+        </div>
+      </header>
+
+      <section className="section" aria-labelledby="origins-title">
+        <div className="container essay-layout">
+          <div className="essay-head reveal">
+            <p className="eyebrow">Our Story</p>
+            <h2 id="origins-title" className="col-title">
+              The Zikaron Project: <em>Our Origins</em>
+            </h2>
+            <div className="segmented" role="group" aria-label="Essay language">
+              <button type="button" aria-pressed={!isHebrew} onClick={() => setLanguage('english')}>
+                English
+              </button>
+              <button type="button" aria-pressed={isHebrew} onClick={() => setLanguage('hebrew')} className="hebrew-label" lang="he">
+                עברית
+              </button>
+            </div>
+          </div>
+
+          <article
+            key={language}
+            className={`essay dropcap ${isHebrew ? 'essay--hebrew' : ''}`}
+            lang={isHebrew ? 'he' : 'en'}
           >
-            Explore the songs
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
-            </svg>
-          </a>
-        </div>
-        <div className="bg-white/80 border-2 border-oliveGreen/30 rounded-3xl shadow-2xl p-10 space-y-6">
-          <p className="text-sm uppercase tracking-[0.35em] text-oliveGreen font-bold">Who We Serve</p>
-          <h2 className="text-3xl font-bold text-earthBrown">Diaspora Communities & Educators</h2>
-          <p className="text-lg leading-relaxed text-earthBrown/90">
-            These translations help Hebrew and English speakers learn, teach, and mourn together. They are designed for classrooms, ceremonies, and personal reflection.
-          </p>
-          <ul className="list-disc list-inside text-earthBrown/80 space-y-2">
-            <li>Thoughtful translations aiming to preserve poetic nuance</li>
-            <li>Contextual backgrounds that honor each song's origin</li>
-            <li>Visual storytelling to engage non-Hebrew speakers</li>
-          </ul>
+            {paragraphs.map((paragraph, index) => (
+              <React.Fragment key={index}>
+                <p className="reveal">{paragraph}</p>
+                {!isHebrew && index === 1 && (
+                  <blockquote className="pull-quote reveal">{PULL_QUOTE}</blockquote>
+                )}
+              </React.Fragment>
+            ))}
+          </article>
         </div>
       </section>
 
-      <section className="bg-white border-2 border-oliveGreen/30 rounded-3xl shadow-2xl p-10 space-y-5">
-        <p className="text-sm uppercase tracking-[0.35em] text-oliveGreen font-bold">About Our Logo</p>
-        <h2 className="text-3xl font-bold text-earthBrown">Dam HaMaccabim & the Promise of Zikaron</h2>
-        <div className="flex flex-col lg:flex-row gap-10 items-center">
-          <div className="rounded-3xl shadow-lg border border-sageGreen/40 overflow-hidden flex-shrink-0" style={{width: '325px', height: '325px'}}>
+      <section className="section" style={{ background: 'var(--paper-2)' }}>
+        <div className="container two-col">
+          <div className="reveal">
+            <p className="eyebrow">Our Mission</p>
+            <h2 className="col-title">Holding Memory in Two Languages</h2>
+            <p className="col-body">{missionStatement}</p>
+            <div className="mt-2">
+              <a href={resolvePath('home/#songs')} className="btn btn--primary">
+                Explore the songs
+                <Icon.ArrowRight />
+              </a>
+            </div>
+          </div>
+          <div className="reveal" style={{ '--i': 1 }}>
+            <p className="eyebrow">Who We Serve</p>
+            <h2 className="col-title">Diaspora Communities &amp; Educators</h2>
+            <p className="col-body">
+              These translations help Hebrew and English speakers learn, teach, and mourn together. They are designed for classrooms, ceremonies, and personal reflection.
+            </p>
+            <ul className="tick-list">
+              <li>Thoughtful translations aiming to preserve poetic nuance</li>
+              <li>Contextual backgrounds that honor each song's origin</li>
+              <li>Visual storytelling to engage non-Hebrew speakers</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="section" aria-labelledby="logo-title">
+        <div className="container flower-feature">
+          <figure className="flower-feature__img reveal">
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/DamHamacabim_ST_06.jpg/500px-DamHamacabim_ST_06.jpg"
-              alt="Dam HaMaccabim HaAdom flower"
-              className="w-full h-full object-cover"
+              alt="Dam HaMaccabim HaAdom flowers growing among rocks"
+              loading="lazy"
             />
-          </div>
-          <div className="space-y-4 text-lg leading-relaxed text-earthBrown/90 flex-1">
-            <p>
-              The flower featured in our logo is the Dam HaMaccabim HaAdom (Helichrysum sanguineum), known in English as the Maccabi blood flower. Due to its vivid red bracts, which are believed by some to resemble drops of blood, the Dam HaMaccabim HaAdom has become the official symbol of Yom HaZikaron, Israel's Memorial Day. Pins and stickers bearing this flower are worn across the country in ceremonies, echoing the legend that the plant blooms wherever the Maccabees shed their blood. As often said at the conclusion of remembrance ceremonies in Israel, "במותם ציוו לנו את החיים״. In English, this phrase translates to the words, "with their death, they commanded us to live." Just as in the story of the Maccabees, the sacrifice of our fallen heroes has ensured our survival.
+            <figcaption>Helichrysum sanguineum · Wikimedia Commons</figcaption>
+          </figure>
+          <div className="reveal" style={{ '--i': 1 }}>
+            <p className="eyebrow">About Our Logo</p>
+            <h2 id="logo-title" className="col-title">Dam HaMaccabim &amp; the Promise of Zikaron</h2>
+            <p className="col-body">
+              The flower featured in our logo is the Dam HaMaccabim HaAdom (Helichrysum sanguineum), known in English as the Maccabi blood flower. Due to its vivid red bracts, which are believed by some to resemble drops of blood, the Dam HaMaccabim HaAdom has become the official symbol of Yom HaZikaron, Israel's Memorial Day. Pins and stickers bearing this flower are worn across the country in ceremonies, echoing the legend that the plant blooms wherever the Maccabees shed their blood. As often said at the conclusion of remembrance ceremonies in Israel, <span className="hebrew" lang="he">"במותם ציוו לנו את החיים״</span>. In English, this phrase translates to the words, "with their death, they commanded us to live." Just as in the story of the Maccabees, the sacrifice of our fallen heroes has ensured our survival.
             </p>
           </div>
         </div>
       </section>
-    </main>
-
-    <Footer />
-  </div>
+    </PageShell>
   );
 };
 
