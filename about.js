@@ -1,4 +1,4 @@
-const { PageShell, Icon } = window.SharedComponents || {};
+const { PageShell, Icon, AmbientVideo } = window.SharedComponents || {};
 const { resolvePath, useReveal } = window.Zikaron || {};
 
 if (!PageShell) {
@@ -68,8 +68,12 @@ const AboutPage = () => {
   return (
     <PageShell current="about">
       <header className="page-hero on-ink">
-        <div className="page-hero__media">
-          <img src={resolvePath('assets/shore.webp')} alt="Sea foam retreating across the sand at dusk" />
+        <div className="page-hero__media page-hero__media--video">
+          <AmbientVideo
+            name="jerusalem"
+            alt="Red Dam HaMaccabim flowers beside Jerusalem stone at dawn, with the misty Jerusalem hills and an old olive tree behind"
+            priority
+          />
         </div>
         <div className="page-hero__veil" aria-hidden="true"></div>
         <div className="container page-hero__content">

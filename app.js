@@ -1,5 +1,5 @@
 const { useState, useMemo, useEffect, useRef } = React;
-const { PageShell, Icon } = window.SharedComponents || {};
+const { PageShell, Icon, AmbientVideo } = window.SharedComponents || {};
 const {
   resolvePath,
   thumbnailFor,
@@ -37,73 +37,12 @@ const REMEMBERED = [
 const pad = (n) => String(n).padStart(2, '0');
 
 /* --------------------------------------------------------------------------
-   Ambient looping video (Higgsfield-generated), with a still poster fallback
-   -------------------------------------------------------------------------- */
-
-const saveData = () =>
-  typeof navigator !== 'undefined' && navigator.connection && navigator.connection.saveData;
-
-const AmbientVideo = ({ name, alt, playing = true, lazy = false, priority = false }) => {
-  const videoRef = useRef(null);
-  const wrapRef = useRef(null);
-  const [ready, setReady] = useState(false);
-  const [inView, setInView] = useState(!lazy);
-  const stillOnly = prefersReducedMotion() || saveData();
-  const small = typeof window !== 'undefined' && window.innerWidth < 900;
-  const src = resolvePath(`assets/${name}${small ? '-sm' : ''}.mp4`);
-
-  useEffect(() => {
-    if (!lazy || !('IntersectionObserver' in window)) return undefined;
-    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { rootMargin: '200px' });
-    if (wrapRef.current) observer.observe(wrapRef.current);
-    return () => observer.disconnect();
-  }, [lazy]);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (playing && inView) {
-      const attempt = video.play();
-      if (attempt && attempt.catch) attempt.catch(() => {});
-    } else {
-      video.pause();
-    }
-  }, [playing, inView, ready]);
-
-  return (
-    <div ref={wrapRef} style={{ position: 'absolute', inset: 0 }}>
-      <img
-        src={resolvePath(`assets/${name}.webp`)}
-        alt={alt}
-        loading={priority ? 'eager' : 'lazy'}
-        fetchpriority={priority ? 'high' : undefined}
-        decoding="async"
-      />
-      {!stillOnly && (inView || ready) && (
-        <video
-          ref={videoRef}
-          className={ready ? 'is-ready' : ''}
-          src={src}
-          muted
-          loop
-          playsInline
-          autoPlay
-          preload="auto"
-          aria-hidden="true"
-          onCanPlay={() => setReady(true)}
-        />
-      )}
-    </div>
-  );
-};
-
-/* --------------------------------------------------------------------------
    Sections
    -------------------------------------------------------------------------- */
 
 const Hero = () => {
   const [playing, setPlaying] = useState(true);
-  const reduced = prefersReducedMotion();
+  const [videoLive, setVideoLive] = useState(false);
 
   return (
     <header className="hero on-ink">
@@ -113,6 +52,7 @@ const Hero = () => {
           alt="Dusk over the Judean hills, with red Dam HaMaccabim flowers in the foreground"
           playing={playing}
           priority
+          onLive={() => setVideoLive(true)}
         />
       </div>
       <div className="hero__veil" aria-hidden="true"></div>
@@ -140,8 +80,8 @@ const Hero = () => {
         </div>
       </div>
 
-      {!reduced && (
-        <div className="hero__meta rise" style={{ '--i': 6 }}>
+      {videoLive && (
+        <div className="hero__meta">
           <button
             type="button"
             className="media-toggle"

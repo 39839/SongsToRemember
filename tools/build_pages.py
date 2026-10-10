@@ -110,7 +110,7 @@ SITE_DESC = ("Hebrew remembrance songs, translated into English, so the world ca
 write("home/index.html", page("../", "The Zikaron Project — Songs of Remembrance", SITE_DESC, "home/", "app.js", preload="assets/hero.webp"))
 write("about/index.html", page("../", "About — The Zikaron Project",
       "Why The Zikaron Project translates Israel's remembrance songs into English, and the story of how it began.", "about/", "about.js",
-      preload="assets/shore.webp"))
+      preload="assets/jerusalem.webp"))
 write("requests/index.html", page("../", "Request a Song — The Zikaron Project",
       "Suggest a Hebrew remembrance song for The Zikaron Project to translate into English.", "requests/", "requests.js",
       preload="assets/wheat.webp"))

@@ -382,6 +382,108 @@ const Footer = () => {
 };
 
 /* --------------------------------------------------------------------------
+   Ambient looping video (Higgsfield-generated) over a still poster.
+   The video stays invisible until it is actually playing, so browsers that
+   block autoplay (e.g. iOS Low Power Mode) simply show the still image and
+   never a native play button.
+   -------------------------------------------------------------------------- */
+
+const saveData = () =>
+  typeof navigator !== 'undefined' && navigator.connection && navigator.connection.saveData;
+
+const AmbientVideo = ({ name, alt, playing = true, lazy = false, priority = false, onLive }) => {
+  const videoRef = useRef(null);
+  const wrapRef = useRef(null);
+  const [live, setLive] = useState(false);
+  const [inView, setInView] = useState(!lazy);
+  const stillOnly = prefersReducedMotion() || saveData();
+  const small = typeof window !== 'undefined' && window.innerWidth < 900;
+  const src = resolvePath(`assets/${name}${small ? '-sm' : ''}.mp4`);
+
+  // Safari decides whether a video may autoplay when it starts loading, and React
+  // never writes the `muted` attribute. So mark it muted/inline first, then set src.
+  const attachVideo = (node) => {
+    videoRef.current = node;
+    if (node && !node.dataset.src) {
+      node.muted = true;
+      node.defaultMuted = true;
+      node.setAttribute('muted', '');
+      node.setAttribute('playsinline', '');
+      node.setAttribute('webkit-playsinline', '');
+      node.dataset.src = src;
+      node.src = src;
+    }
+  };
+
+  const tryPlay = () => {
+    const video = videoRef.current;
+    if (!video || !playing || !inView) return;
+    const attempt = video.play();
+    if (attempt && attempt.catch) attempt.catch(() => {});
+  };
+
+  useEffect(() => {
+    if (!lazy || !('IntersectionObserver' in window)) return undefined;
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { rootMargin: '200px' });
+    if (wrapRef.current) observer.observe(wrapRef.current);
+    return () => observer.disconnect();
+  }, [lazy]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (playing && inView) tryPlay();
+    else video.pause();
+  }, [playing, inView]);
+
+  // If the browser blocked autoplay (e.g. iOS Low Power Mode), start on the first tap.
+  useEffect(() => {
+    if (live || stillOnly) return undefined;
+    const events = ['touchstart', 'pointerdown', 'keydown'];
+    const onFirstInteraction = () => tryPlay();
+    events.forEach((e) => window.addEventListener(e, onFirstInteraction, { once: true, passive: true }));
+    return () => events.forEach((e) => window.removeEventListener(e, onFirstInteraction));
+  }, [live, playing, inView]);
+
+  const handlePlaying = () => {
+    if (!live) {
+      setLive(true);
+      if (onLive) onLive();
+    }
+  };
+
+  return (
+    <div ref={wrapRef} style={{ position: 'absolute', inset: 0 }}>
+      <img
+        src={resolvePath(`assets/${name}.webp`)}
+        alt={alt}
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : undefined}
+        decoding="async"
+      />
+      {!stillOnly && (inView || live) && (
+        <video
+          ref={attachVideo}
+          className={live ? 'is-ready' : ''}
+          muted
+          loop
+          playsInline
+          autoPlay
+          preload="auto"
+          controls={false}
+          disablePictureInPicture
+          disableRemotePlayback
+          tabIndex={-1}
+          aria-hidden="true"
+          onCanPlay={tryPlay}
+          onPlaying={handlePlaying}
+        />
+      )}
+    </div>
+  );
+};
+
+/* --------------------------------------------------------------------------
    Page shell
    -------------------------------------------------------------------------- */
 
@@ -395,7 +497,7 @@ const PageShell = ({ current, children }) => (
   </React.Fragment>
 );
 
-window.SharedComponents = { Navigation, Footer, ShareButton, PageShell, Icon };
+window.SharedComponents = { Navigation, Footer, ShareButton, PageShell, Icon, AmbientVideo };
 window.Zikaron = {
   SITE_ROOT,
   resolvePath,
