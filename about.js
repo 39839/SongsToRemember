@@ -5,7 +5,10 @@ if (!PageShell) {
   throw new Error('Shared components missing on about page.');
 }
 
-const missionStatement = "These videos are part of my project to translate Hebrew remembrance day songs into English, in an effort to offer Jewish communities abroad a way to connect with Israelis in remembrance of those we have lost. Join me in memory of the fallen soldiers of the IDF, in memory of the victims of the Holocaust, and in memory of all the victims of Jewish hate worldwide. These videos also serve to share our pain and experiences with the global community, as well as to be used as an educational tool by both Hebrew and English educators.";
+const missionParagraphs = [
+  "“The Zikaron Project” is an effort to provide non-Hebrew speakers with a means to connect with Israelis and join them in memorializing their fallen.",
+  "Through a collection of lyric videos that translate classic remembrance day songs into English, this project aims to share Jewish and Israeli experiences, pain, and memory with the global community, as well as to be used as an educational tool by both Hebrew and English educators.",
+];
 
 const aboutEssay = `
 When I was a kid, one of the ways my family attempted to maintain our connection to Israeli culture from afar was by tuning into Israeli TV shows every now and then. One of my favorites was a reality show called "בית ספר למוזיקה," or "Music School,"— essentially a singing competition for kids. To this day, I remember the performance of nine-year-old Gaya Maman, who auditioned with the song "Elifelet." As she began to sing, the audience, judges, and my parents all became visibly stunned. Since I could not understand the words, which were written in a Tanakhic style of Hebrew, I did not understand their reactions. Confused, my brothers and I asked my mom to explain the song to us, and she did. We went over each word, dissecting the story of a weird and socially estranged boy who launches himself onto a grenade to protect his fellow soldiers. I was the same age as Gaya at the time.
@@ -67,7 +70,7 @@ const AboutPage = () => {
 
   return (
     <PageShell current="about">
-      <header className="page-hero on-ink">
+      <header className="page-hero page-hero--banner on-ink">
         <div className="page-hero__media page-hero__media--video">
           <AmbientVideo
             name="jerusalem"
@@ -76,17 +79,10 @@ const AboutPage = () => {
           />
         </div>
         <div className="page-hero__veil" aria-hidden="true"></div>
-        <div className="container page-hero__content">
-          <h1 className="display page-hero__title rise" style={{ '--i': 1 }}>
-            The Zikaron Project
-          </h1>
-          <p className="page-hero__lede rise" style={{ '--i': 2 }}>
-            The Zikaron Project shares the heart of Israel's remembrance tradition with the world through carefully translated lyrics, cinematic storytelling, and reverent design.
-          </p>
-        </div>
+        <h1 className="sr-only">About The Zikaron Project</h1>
       </header>
 
-      <section className="section" aria-labelledby="origins-title">
+      <section className="section section--first" aria-labelledby="origins-title">
         <div className="container essay-layout">
           <div className="essay-head reveal">
             <p className="eyebrow">Our Story</p>
@@ -125,7 +121,9 @@ const AboutPage = () => {
           <div className="reveal">
             <p className="eyebrow">Our Mission</p>
             <h2 className="col-title">Holding Memory in Two Languages</h2>
-            <p className="col-body">{missionStatement}</p>
+            {missionParagraphs.map((text) => (
+              <p key={text} className="col-body">{text}</p>
+            ))}
             <div className="mt-2">
               <a href={resolvePath('home/#songs')} className="btn btn--primary">
                 Explore the songs

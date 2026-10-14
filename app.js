@@ -20,20 +20,6 @@ const MissionStatement = () => (
   </span>
 );
 
-// The people named in each song's story. Linked to the song that remembers them.
-const REMEMBERED = [
-  { name: 'Alon Scagio', note: 'Capt. · Kfir Brigade, 2024', song: 'Beautiful Things to See' },
-  { name: 'Amit Man', note: "Paramedic · Kibbutz Be'eri, 2023", song: 'Nothing Will Hurt Me' },
-  { name: 'The victims of the Nova festival', note: "Kibbutz Re'im · October 7, 2023", song: 'Dance' },
-  { name: 'Sean Mondschein', note: 'Sgt. · Golani Brigade, 2014', song: 'Good Night, Sean' },
-  { name: 'Tom Farkash', note: 'Second Lebanon War, 2006', song: 'In Our Kindergarten' },
-  { name: 'Erez Stark', note: 'Lt. · Helicopter disaster, 1997', song: 'Nothing Will Hurt Me' },
-  { name: 'Chen Brod', note: 'Second Lt. · Lebanese border, 1985', song: 'Fruit of Your Garden' },
-  { name: 'The victims of Ras Burqa', note: 'Sinai · October 5, 1985', song: 'Perach (Flower)' },
-  { name: 'Zion Hazan', note: 'Lt. · Lebanon', song: 'Nothing Will Hurt Me' },
-  { name: 'Eleven members of one kibbutz', note: 'Yom Kippur War, 1973', song: 'The Wheat Grows Again' },
-].filter((person) => songsData.some((song) => song.title === person.song));
-
 const pad = (n) => String(n).padStart(2, '0');
 
 /* --------------------------------------------------------------------------
@@ -116,7 +102,7 @@ const Mission = () => (
 );
 
 const Memorial = () => (
-  <section className="memorial on-ink" aria-labelledby="memorial-title">
+  <section className="memorial on-ink" aria-label="With their death, they commanded us to live">
     <div className="memorial__media">
       <AmbientVideo name="candle" alt="A memorial candle burning on Jerusalem stone beside a sprig of red flowers" lazy />
     </div>
@@ -132,27 +118,6 @@ const Memorial = () => (
         </p>
       </div>
 
-      <div className="names">
-        <div className="names__head reveal">
-          <h2 id="memorial-title" className="eyebrow eyebrow--plain">In memory of</h2>
-        </div>
-        <ul className="names__list">
-          {REMEMBERED.map((person, index) => {
-            const song = songsData.find((s) => s.title === person.song);
-            return (
-              <li key={person.name} className="names__item reveal" style={{ '--i': index % 2 }}>
-                <a href={songUrl(song)}>
-                  <span>
-                    <span className="names__rank">{person.note}</span>
-                    <span className="names__name">{person.name}</span>
-                  </span>
-                  <span className="names__song">{song.title}</span>
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
     </div>
   </section>
 );

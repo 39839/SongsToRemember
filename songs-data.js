@@ -196,7 +196,7 @@ const songs = [
     videoUrl: "4J7bQpp_MGo",
     credits: "Written by Noam Chorev, Composed by Ilai Botner, Performed by Ilai Botner and Yaldei Hachutz, Translated (and adapted) by Naama Ben-Dor.",
     context: "This video is part of my project to share English translations of Hebrew remembrance songs with the global community, in an effort to connect Jews throughout the diaspora in their shared pain and experiences.",
-    summary: "A promise to loved ones who are gone: until we meet again, we will meet in our dreams.",
+    summary: "Conveys the permanence of longing for a loved one who has gone: “And for now, we will meet in our dreams.”",
     lyrics: [
       { he: "עוד נחזור להיפגש, להסתכל שוב בעיניים.", tr: "Od nachzor lehipagesh, lehistakel shuv ba'einayim.", en: "And we'll meet once again, gaze into each other's eyes." },
       { he: "יש פקק תפילות כבד בנתיב של השמיים.", tr: "Yesh pkak tfilot kaved b'nativ shel hashamayim.", en: "There's a traffic jam of prayers—on the road to the skies." },
@@ -375,7 +375,7 @@ const songs = [
     videoUrl: "h7lxLgEQsOw",
     credits: "Written and composed by Yiftach Kerzner in memory of his friend, Tom Farkash, who fell in the Second Lebanon War. The song was performed by Shayli Atari in 2014. Translated by Naama Ben-Dor.",
     context: "Etzlenu BaGan (אצלנו בגן) was written and composed by Yiftach Kerzner in memory of his friend, Tom Farkash, who fell in the Second Lebanon War. The song was performed by Shayli Atari in 2014, during Operation Protective Edge, but has since taken on added significance, as Atari's husband was later murdered on Oct. 7, 2023, while protecting his wife and one-month-old daughter from Hamas terrorists who infiltrated into their home.",
-    summary: "Written in memory of a childhood friend, Tom Farkash, who fell in the Second Lebanon War.",
+    summary: "Written in memory of Tom Farkash z”l, this song highlights the childlike youth of the soldiers who fight to ensure the safety of their country.",
     lyrics: [
       { he: "אצלנו בגן יש המון ילדים", tr: "Etzlenu bagan yesh hamon yeladim", en: "At our kindergarten, there are many kids," },
       { he: "את חלקם אני אוהב", tr: "Et chelkam ani ohev", en: "Some of them—I like" },
