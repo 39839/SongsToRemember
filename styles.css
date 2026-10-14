@@ -2406,3 +2406,7 @@ button {
 .col-body + .col-body {
   margin-top: 1rem;
 }
+
+.mission__body p + p {
+  margin-top: 1rem;
+}

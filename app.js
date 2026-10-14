@@ -15,9 +15,14 @@ if (!PageShell) {
 const songsData = window.songs || [];
 
 const MissionStatement = () => (
-  <span>
-    <strong>The Zikaron Project</strong> is an effort to translate Hebrew remembrance day songs into English, as a means for both Jews and non-Jews abroad to connect with Israeli pain, memory, and grief. By conveying Israelis' story—as told in their own words—to the international community, this project seeks to offer the global community a truer understanding of the Israeli experience, as well as to provide an educational tool for language educators. Most importantly, The Zikaron Project aims to commemorate and eternalize the memory of our fallen, and share their stories with the world.
-  </span>
+  <React.Fragment>
+    <p>
+      <strong>“The Zikaron Project”</strong> is an effort to provide non-Hebrew speakers with a means to connect with Israelis and join them in memorializing their fallen.
+    </p>
+    <p>
+      Through a collection of lyric videos that translate classic remembrance day songs into English, this project aims to share Jewish and Israeli experiences, pain, and memory with the global community, as well as to be used as an educational tool by both Hebrew and English educators.
+    </p>
+  </React.Fragment>
 );
 
 const pad = (n) => String(n).padStart(2, '0');
@@ -88,9 +93,9 @@ const Mission = () => (
     <div className="container mission">
       <img src={resolvePath('assets/flower-sm.png')} alt="" className="mission__flower reveal" width="54" height="81" loading="lazy" />
       <h2 id="mission-title" className="sr-only">About The Zikaron Project</h2>
-      <p className="mission__body reveal" style={{ '--i': 1 }}>
+      <div className="mission__body reveal" style={{ '--i': 1 }}>
         <MissionStatement />
-      </p>
+      </div>
       <div className="reveal" style={{ '--i': 2 }}>
         <a href={resolvePath('about/')} className="link-arrow">
           Our Story
